@@ -20,7 +20,6 @@ STRAIGHT_END = THREE_OF_A_KIND_END+STRAIGHT_COMBOS
 
 FLUSH_START = STRAIGHT_END
 FLUSH_COMBOS = 9#?? (probably needs less)
-
 FLUSH_END = FLUSH_START+FLUSH_COMBOS
 
 FULL_HOUSE_START = FLUSH_END
@@ -50,6 +49,9 @@ three of a kind
 two pair
 one pair
 high card
+
+should assume 2 to 5 cards
+
 """
 
 class Hand():
@@ -98,10 +100,18 @@ class Hand():
 
     def card_val(self, card):
         return card%13
+
+    def lowest_cards(self, p):
+        c = set([0, 1, 2, 3])
+        if p in c: c.remove(p)
+        else: c.remove(3)
+        c = list(c)
+        c.sort()
+        return c
     
     ###############################
     """checkers"""
-    def pairs(self):
+    def pairs(self):#TODO make sure it works with 2-4 cards
         cardType = set()
         newcards = self.sortByValue(self.cards)
         for i in range(len(newcards)):
@@ -198,8 +208,11 @@ class Hand():
         if card<=0: return 0
         return sum(combos[:card])
 
-    def one_pair_val(self, p, c1, c2, c3):
+    def one_pair_val(self, p, c1=-1, c2=-1, c3=-1):
         [l3, l2, l1] = [2, 1, 0]
+        print(c1)
+        if c1<0:
+            c3, c2, c1 = self.lowest_cards(p)
         if c1>p: h1 = self.card_val(c1)-3
         else:h1 = self.card_val(c1)-2
         if c2>p: h2 = self.card_val(c2)-2
@@ -273,9 +286,11 @@ class Hand():
         if t:
             return self.three_of_a_kind_val(t[0], t[2], t[1])
         p = self.pairs()
+        print(p)
         if len(p[0])==2:
             return self.two_pair_val(p[0][0], p[0][1], p[1][0])
         elif len(p[0]) == 1:
+            if len(self.cards) ==2: return self.one_pair_val(p[0][0])
             return self.one_pair_val(p[0][0], p[1][0], p[1][1], p[1][2])
         else: return self.high_val()
 """
@@ -298,5 +313,10 @@ def hand_test():
 if __name__ == "__main__":
     #h = Hand([1, 2, 3, 4, 49])
     #print(h.hand_val())
-    hand_test()
+    #hand_test()
     #f = Hand([0, 1, 13, 26, 39])
+    h = Hand([12+13, 12, 0, 1, 2, 3, 4])
+    print (h.hand_val())
+    h2 = Hand([12+13, 12, 1, 0, 2])
+    print (h2.hand_val())
+    
