@@ -1,3 +1,16 @@
+"""
+texas_holdem_hand.py
+holds the Hand class
+
+Last Modified: 4/18/17
+Last Modified By: Anna
+
+Comments:
+currently works with 5 or 2 cards
+
+TODO:
+add fix to determine best hand for hand of more than 5 cards
+"""
 HIGH_CARD_START = 0
 HIGH_CARD_COMBOS = 13#fix later
 HIGH_CARD_END = HIGH_CARD_START + HIGH_CARD_COMBOS
