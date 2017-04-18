@@ -13,7 +13,7 @@ class HumanPlayer(Player):
 		print("5. fold")
 
 		self.input = input()
-		if (self.input == 1):
+		if (self.input == "1"):
 			if(self.betFlag == 1):
 				print("you have already bet this game.")
 				return self.action(maxbet)
@@ -26,7 +26,7 @@ class HumanPlayer(Player):
 			self.betFlag = 1
 			return (["bet", int(self.input)])
 
-		elif (self.input == 2):
+		elif (self.input == "2"):
 			if(self.betFlag == 1):
 				print("you have already bet this game.")
 				return self.action(maxbet)
@@ -39,12 +39,12 @@ class HumanPlayer(Player):
 			self.betFlag = 1
 			return (["raise", int(self.input)])
 
-		elif (self.input == 3):
+		elif (self.input == "3"):
 			self.chips -= self.game.callAmount(self)
 			return (["call", self.game.callAmount(self)])
-		elif (self.input == 4):
+		elif (self.input == "4"):
 			return(["check"])
-		elif (self.input == 5):
+		elif (self.input == "5"):
 			return(["fold"])
 		else:
 			print("unrecognized input: " + str(self.input))
