@@ -11,11 +11,11 @@ from human import *
 #Deal Two Cards to each player
 #--Turn Order--
 	# Bet
-	#deal 1 card
-	#bet
-	#deal 1 card
-	#bet
 	# flip 3
+	#bet
+	#deal 1 card
+	#bet
+	#deal 1 card
 	#bet
 	#resolve
 
@@ -82,6 +82,9 @@ class Game(object):
 
 		return self.string
 
+	def revealedCards(self):
+		return self.field
+
 	def startGame(self):
 		while len(self.players) > 0:
 			#self.newHand()
@@ -102,15 +105,16 @@ class Game(object):
 			self.pot += player.collectAnti(1)
 
 		self.newHand() # deal cards
-		self.roundOfBetting() #1st betting round
-		self.field.append(self.deck.getCard()) #flip first card
-		self.roundOfBetting() #1st betting round
-		self.field.append(self.deck.getCard()) #flip second card
-		self.roundOfBetting() #1st betting round
-		self.field.append(self.deck.getCard()) #flip 3 cards
+		self.roundOfBetting() #pre-flop betting
+		self.field.append(self.deck.getCard()) #flop
 		self.field.append(self.deck.getCard())
 		self.field.append(self.deck.getCard())
-		self.roundOfBetting() #1st betting round
+		self.roundOfBetting() #post flop betting
+		self.field.append(self.deck.getCard()) #turn
+		self.roundOfBetting() #post turn betting
+		self.field.append(self.deck.getCard()) #river
+		self.roundOfBetting() #post river betting
+		
 		self.resolveHand()
 		print(self)
 
@@ -158,9 +162,9 @@ class Game(object):
 					elif self.currentAction[0] == "fold":
 						self.players.remove(player)
 						self.history.append(["fold", player.getName()])
-			elif self.needToCall == False:
-				break
-				# print(self)
+			# elif self.needToCall == False:
+			# 	break
+			# 	# print(self)
 			else: #players must call
 				for player in players:
 					if self.call[player.getName()] > 0:
