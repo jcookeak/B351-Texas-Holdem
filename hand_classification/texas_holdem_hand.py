@@ -7,10 +7,16 @@ Last Modified By: Anna
 
 Comments:
 currently works with 5 or 2 cards
+high card and flush values only take into account the highest card in the hand
 
 TODO:
 add fix to determine best hand for hand of more than 5 cards
+add hand comparison function
 """
+
+#########
+#GLOBALS#
+#########
 HIGH_CARD_START = 0
 HIGH_CARD_COMBOS = 13#fix later
 HIGH_CARD_END = HIGH_CARD_START + HIGH_CARD_COMBOS
@@ -67,10 +73,21 @@ should assume 2 to 5 cards
 
 """
 
+"""
+The Hand class
+takes an array of private cards and an array of public cards
+can check for types of hands and rank hands
+"""
+
 class Hand():
     def __init__(self, private_cards, public_cards = []):
         self.cards = private_cards + public_cards
         self.cards = self.sortByValue(self.cards)
+
+    """
+    takes an integer and returns the recursive result of summing the number
+    with tri-num applied to the number -1
+    """
     def tri_nums(self, num):
         if num <= 0: return 0
         else:return num+self.tri_nums(num-1)
@@ -80,7 +97,7 @@ class Hand():
     def sortByValue(self, cards):
         return sorted(cards, key=lambda x: x%13)
     """
-    sorts cards by suit, returns sorted list
+    sorts cards by suit, returns sorted list lowest to highest by suit then card
     """
     def sortBySuit(self, cards):
         cards.sort()
@@ -93,7 +110,10 @@ class Hand():
         for c in cards:
             if c%13!=v: return False
         return True
-
+    """
+    modCards: a helper function that takes a set of ints
+    returns a set of modded integers: num%13
+    """
     def modCards(self, cardset):
         newset = set(cardset)
         for i in cardset:
@@ -111,6 +131,10 @@ class Hand():
             h= max(h, c%13)
         return h
 
+    """
+    takes an integer representing a card
+    returns an integer representing the card type (0-12)
+    """
     def card_val(self, card):
         return card%13
 
@@ -124,7 +148,12 @@ class Hand():
     
     ###############################
     """checkers"""
-    def pairs(self):#TODO make sure it works with 2-4 cards
+
+    """
+    checks for pairs in the hand
+    returns an array [[card type of pairs], [rest of cards]]
+    """
+    def pairs(self):
         cardType = set()
         newcards = self.sortByValue(self.cards)
         for i in range(len(newcards)):
@@ -138,6 +167,12 @@ class Hand():
             if c in newcards:
                 newcards.remove(c)
         return [self.sortByValue(list(cardType)), self.sortByValue(list(newcards))]
+
+    """
+    checks for 3 of a kind
+    returns an array [3-of-a-kind-type, card1, card2]
+    or false
+    """
     def three(self):
         if len(self.cards)<3: return False
         cardType = set()
@@ -165,6 +200,10 @@ class Hand():
         return False
     """
     checks for four of a kind
+    returns an array:
+    [4-of-a-kind-card-type, other-card]
+    or
+    [false, false]
     """
     def four(self):    
         cardType = set()
@@ -194,7 +233,10 @@ class Hand():
             n = (n+1)%13
         return True
     
-    """check for flush"""
+    """
+    check for flush
+    returns a boolean
+    """
     def flush(self):
         if len(self.cards)<1:return False
         newcards = self.sortBySuit(self.cards)
@@ -277,7 +319,7 @@ class Hand():
     def straight_flush_val(self, cards):
         return self.high(cards)+STRAIGHT_FLUSH_START
     """
-    takes an array of integers representing cards, returns a 
+    takes an array of integers representing cards, returns an integer hand ranking
     """
     def hand_val(self):
         cards = self.sortByValue(self.cards)
@@ -309,7 +351,9 @@ class Hand():
 """
 Tests
 """
-h={0:0}
+"""
+check every possible 5 card hand
+"""
 def hand_test():
     cards = range(52)
     val = set()
@@ -321,15 +365,11 @@ def hand_test():
                         if a<=b or a==c or a==d or a==e:continue
                         if b<=c or b==d or b==e:continue
                         if c<=d or c==e or d<=e:continue
-                        h[0] = Hand([a, b, c, d, e])
-                        v = h[0].hand_val()
+                        h = Hand([a, b, c, d, e])
+                        v = h.hand_val()
 if __name__ == "__main__":
     #h = Hand([1, 2, 3, 4, 49])
     #print(h.hand_val())
     #hand_test()
     #f = Hand([0, 1, 13, 26, 39])
-    h = Hand([12+13, 12, 0, 1, 2, 3, 4])
-    print (h.hand_val())
-    h2 = Hand([12+13, 12, 1, 0, 2])
-    print (h2.hand_val())
-    
+    pass
