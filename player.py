@@ -8,6 +8,12 @@ class Player(object):
 		self.hand = [-1, -1]
 		self.betFlag = 0
 
+	def handToValue(self):
+		self.tempHand = []
+		for x in self.hand:
+			self.tempHand.append(x.toValue())
+		return self.tempHand
+
 	def setChips(self,chips):
 		self.chips = chips
 

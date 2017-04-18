@@ -4,6 +4,9 @@ import random
 
 from player import *
 from human import *
+from no_bluff_player import *
+from card import *
+
 # Texas Hold'em Game Controller
 
 #Init game
@@ -44,12 +47,7 @@ class Deck(object):
 	# def deal(self, n):
 	# 	for x in range(0,n):
 
-class Card(object):
-	def __init__(self, card_val):
-		self.val = card_val
-	def __str__(self):
-		self.string = str(face[self.val % 13]) + " of " + str(suits[int(math.floor(self.val / 13))])#+ str(suits[(self.val / 11) + 1])
-		return self.string
+
 
 class Game(object):
 	def __init__(self, players, chips):
