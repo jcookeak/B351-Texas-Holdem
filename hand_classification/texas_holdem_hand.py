@@ -351,6 +351,51 @@ class Hand():
             if len(self.cards) ==2: return self.one_pair_val(p[0][0])
             return self.one_pair_val(p[0][0], p[1][0], p[1][1], p[1][2])
         else: return self.high_val()
+
+    def is_hand(self):
+        cards = self.sortByValue(self.cards)
+        if  self.royalFlush():
+            return [True, "royal_flush"]
+        elif self.straightFlush():
+            return [True, "straight_flush"]
+        f = self.four()#bind four of a kind check
+        if f[0] or f[1]:
+            return [True, "four"]#return
+        fh = self.fullHouse()
+        if fh:
+            return [True, "full"]
+        elif self.flush():
+            return [True, "flush"]
+        elif self.straight():
+            return [True, "straight"]
+        t = self.three()
+        if t:
+            return [True, "three"]
+        p = self.pairs()
+        #print(p)
+        if len(p[0])==2:
+            return [True, "two"] #two pair
+        elif len(p[0]) == 1:
+            if len(self.cards) ==2: return [True, "single"] #one pair
+            return [True, "single"] #one pair
+        else: return [False, "high"] #high-card
+
+    ### get type of hand
+    def hand_type(self, cards):
+        return 0
+
+    #takes in result from is_hand
+    def better_hand_check(self, hand1, hand2):
+        hands = ["high", "single", "two", "three", "straight", "flush", "full", "four", "straight_flush", "royal_flush"]
+        return hands.index(hand2[1]) > hands.index(hand1[1])
+        return 0
+
+    #use for after flop?
+    def hand_outs(self, cards):
+        if len(cards) < 5:
+            return -1
+
+        return 0
 """
 Tests
 """
