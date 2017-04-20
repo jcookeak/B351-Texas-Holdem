@@ -22,8 +22,6 @@ from card import *
 	#bet
 	#resolve
 
-suits = ["Clubs", "Diamonds", "Hearts", "Spades"]
-face = ["Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King", "Ace"]	
 
 class Deck(object):
 	def __init__(self):
@@ -64,7 +62,7 @@ class Game(object):
 			player.setChips(chips)
 			player.setActiveGame(self)
 			self.history.append([player.getName() + " added"])
-		
+
 	def __str__(self):
 		self.string = ""
 		for player in self.players:
@@ -112,7 +110,7 @@ class Game(object):
 		self.roundOfBetting() #post turn betting
 		self.field.append(self.deck.getCard()) #river
 		self.roundOfBetting() #post river betting
-		
+
 		self.resolveHand()
 		print(self)
 

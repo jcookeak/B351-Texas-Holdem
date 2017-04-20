@@ -84,6 +84,9 @@ class Hand():
         self.cards = private_cards + public_cards
         self.cards = self.sortByValue(self.cards)
 
+    def __repr__(self):
+        return str(self.cards)
+
     """
     takes an integer and returns the recursive result of summing the number
     with tri-num applied to the number -1
@@ -145,7 +148,7 @@ class Hand():
         c = list(c)
         c.sort()
         return c
-    
+
     ###############################
     """checkers"""
 
@@ -205,7 +208,7 @@ class Hand():
     or
     [false, false]
     """
-    def four(self):    
+    def four(self):
         cardType = set()
         newcards = self.sortByValue(self.cards)
         for i in range(len(newcards)):
@@ -232,7 +235,7 @@ class Hand():
             if n != c%13:return False
             n = (n+1)%13
         return True
-    
+
     """
     check for flush
     returns a boolean
@@ -265,7 +268,7 @@ class Hand():
 
     def one_pair_val(self, p, c1=-1, c2=-1, c3=-1):
         [l3, l2, l1] = [2, 1, 0]
-        print(c1)
+        #print(c1)
         if c1<0:
             c3, c2, c1 = self.lowest_cards(p)
         if c1>p: h1 = self.card_val(c1)-3
@@ -297,7 +300,7 @@ class Hand():
     """STRAIGHT"""
     def straight_val(self, cards):
         return self.high(cards)+STRAIGHT_START
-    
+
     """FLUSH"""
     def flush_val(self, cards):
         return self.high(cards)+FLUSH_START
@@ -341,7 +344,7 @@ class Hand():
         if t:
             return self.three_of_a_kind_val(t[0], t[2], t[1])
         p = self.pairs()
-        print(p)
+        #print(p)
         if len(p[0])==2:
             return self.two_pair_val(p[0][0], p[0][1], p[1][0])
         elif len(p[0]) == 1:
