@@ -1,3 +1,11 @@
+
+"""
+Game.py
+
+Last modified: 40/20/17
+Last modified by: Anna
+"""
+
 import math
 import re
 import random
@@ -209,14 +217,19 @@ print(deck)
 # p2 = Player()
 # p2.setName("p2")
 
-p0 = HumanPlayer()
+p0 = NoBluffPlayer()#HumanPlayer()
 p0.setName("p0")
-p1 = HumanPlayer()
+p1 = NoBluffPlayer()#HumanPlayer()
 p1.setName("p1")
-p2 = HumanPlayer()
+p2 = NoBluffPlayer()#HumanPlayer()
 p2.setName("p2")
 players = [p0,p1,p2]
 game = Game(players, 200)
+
+p0.setHistory(game.getHistory())
+p1.setHistory(game.getHistory())
+p2.setHistory(game.getHistory())
+
 
 print(game)
 game.startGame()
