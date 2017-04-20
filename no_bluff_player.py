@@ -4,6 +4,9 @@
 Last modified: 4/20/17
 Last modified by: Anna
 
+Things to fix:
+searching history
+
 """
 
 
@@ -19,9 +22,7 @@ class NoBluffPlayer(Player):
                 self.current_bet = 0#keep track of how much agent has in the pot
                 self.round= 0
                 self.history = history
-                #should keep track of round?
-                #should keep track of history
-                #keep track of private vs public cards
+                #keep track of private vs public cards?
                 
         # TODO
         # -- take into account aggression factor (reduce threshold by ~1)
@@ -73,11 +74,13 @@ class NoBluffPlayer(Player):
                 if self.round == 0:# don't want to bet first round
                         if "bet" in moves: moves.remove("bet")
                         if "raise" in moves: moves.remove("raise")
-                self.round+=1#assume 1 action per round (may have to change this)
+                self.round=(self.round+1)%3#assume 1 action per round (may have to change this)
                 
                 #randomly choose for now
                 num = random.randrange(len(moves))
                 move = list(moves)[num]
+
+                if move == "fold": self.round = 0
                 if move == "call": return [move, self.game.callAmount(self)]
                 if move == "raise" or "bet": #bet randomly for now
                         if maxbet>1:bet = random.randrange(1, maxbet+1)
@@ -85,9 +88,7 @@ class NoBluffPlayer(Player):
                         self.chips -= bet + self.game.callAmount(self)
                         self.betFlag = 1
                         return [move, maxbet]
-                return move
-                
-                
+                return move        
                 
 
         def legal_moves(self, history):

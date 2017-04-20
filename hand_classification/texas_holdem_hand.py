@@ -2,7 +2,7 @@
 texas_holdem_hand.py
 holds the Hand class
 
-Last Modified: 4/18/17
+Last Modified: 4/20/17
 Last Modified By: Anna
 
 Comments:
@@ -13,6 +13,10 @@ TODO:
 add fix to determine best hand for hand of more than 5 cards
 add hand comparison function
 """
+
+#import numpy as np
+import itertools as it
+
 
 #########
 #GLOBALS#
@@ -82,6 +86,8 @@ can check for types of hands and rank hands
 class Hand():
     def __init__(self, private_cards, public_cards = []):
         self.cards = private_cards + public_cards
+        self.private = private_cards
+        self.public = public_cards
         self.cards = self.sortByValue(self.cards)
 
     def __repr__(self):
@@ -396,6 +402,23 @@ class Hand():
             return -1
 
         return 0
+
+    def best_hand(self):
+        cards = self.cards[:]
+        if len(cards)<5: return cards
+        hand_combos = list(it.combinations(cards ,5))
+        best_hand_val, best_hand_cards = -1, [-1, -1, -1, -1, -1]
+        for h in hand_combos:
+            self.cards = list(h)
+            v = self.hand_val()
+            if v > best_hand_val:
+                best_hand_val = v
+                best_hand_cards = list(h)
+        self.cards = self.private + self.public
+        return best_hand_cards
+        
+        
+    
 """
 Tests
 """
@@ -421,3 +444,7 @@ if __name__ == "__main__":
     #hand_test()
     #f = Hand([0, 1, 13, 26, 39])
     pass
+"""
+h = Hand([1, 2, 3, 4, 5, 6, 7])
+print(h.best_hand())
+"""
