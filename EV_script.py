@@ -26,24 +26,21 @@ deck = full_deck[0:27]
         # give x cards, find best hand
         # compare against best hand found for each random combination
 
-def post_flop_outs(cards, threshold = [False, "high"]):
+def better_hand_outs(cards, threshold = [False, "high"]):
     outs = set()
 
     cards = np.asarray(cards)
     private = np.asarray([cards[0], cards[1]])
-        #print(cards.sort())
     public = np.setdiff1d(cards, private)
+
     post_flop_outs = np.setdiff1d(np.asarray(full_deck), cards)
-    # go through all combinations of cards not in inital set
-        #cards to add
-    add_num = 4 - public.size
+    #pool of available cards left in deck
     pool = np.setdiff1d(np.asarray(full_deck), cards)
-    fill_cards = list(it.combinations(np.unique(pool),add_num))
+    fill_cards = list(it.combinations(np.unique(pool),1))
     known_cards = []
     for x in (np.append(private, public)):
         known_cards.append(x.val)
-    best_hand = Hand(known_cards).is_hand()
-    #print(best_hand)
+    best_hand = Hand(Hand(known_cards).best_hand()).is_hand()
     for x in fill_cards:
         for p in it.combinations(np.unique(np.append(private, public)), 4):
             temp_pool = np.append(p, x)
@@ -59,6 +56,8 @@ def post_flop_outs(cards, threshold = [False, "high"]):
     print(len(outs))
     print(len(fill_cards))
     return (len(outs)/len(fill_cards))
+
+
 
 
 def hand_rank_7(cards):
@@ -132,4 +131,4 @@ def hand_rank_7(cards):
 #         print("evaluating starting hand: " + str(x))
 
 #returns odds of getting a better hand, with min threshold
-print(post_flop_outs([full_deck[0], full_deck[1], full_deck[16], full_deck[4], full_deck[13]], [True, "single"]))
+print(better_hand_outs([full_deck[0], full_deck[1], full_deck[16], full_deck[4], full_deck[13], full_deck[26]], [True, "straight"]))
