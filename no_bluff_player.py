@@ -64,8 +64,12 @@ class NoBluffPlayer(Player):
                 self.temp = self.checkHand.sortByValue(self.handToValue())
                 if self.round==0 and self.checkFoldPreFlop():#should probably only check this at the begining of a hand
                         return (["fold"])
+
+                #for now, bet the maximum:
+                current_bet = maxbet
+                
                 # didn't fold before flop so need to check or call
-                moves = self.legal_moves(self.history)
+                moves = self.legal_moves(self.history)#get possible moves
                 if self.round == 0:# don't want to bet first round
                         if "bet" in moves: moves.remove("bet")
                         if "raise" in moves: moves.remove("raise")
@@ -73,7 +77,15 @@ class NoBluffPlayer(Player):
                 
                 #randomly choose for now
                 num = random.randrange(len(moves))
-                return list(moves)[num]
+                move = list(moves)[num]
+                if move == "call": return [move, self.game.callAmount(self)]
+                if move == "raise" or "bet": #bet randomly for now
+                        if maxbet>1:bet = random.randrange(1, maxbet+1)
+                        else: bet = maxbet
+                        self.chips -= bet + self.game.callAmount(self)
+                        self.betFlag = 1
+                        return [move, maxbet]
+                return move
                 
                 
                 
@@ -84,7 +96,7 @@ class NoBluffPlayer(Player):
                 if not self.betFlag:
                         if "check" in moves: moves.add("bet")
                         else: moves.add("raise")
-                if self.chips and self.chips != self.current_bet: moves.add("fold")#check for all in, don't fold if true
+                #if self.chips: moves.add("fold")#check for all in, don't fold if no chips are left
                 return moves
         def haveBet(self, history):#TODO: check for hand end, check for round end
                 for i in range(-1, -1*len(history), -1):
