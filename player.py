@@ -7,6 +7,7 @@ class Player(object):
 		self.name = "default"
 		self.hand = [-1, -1]
 		self.betFlag = 0
+		self.round = 0
 
 	def handToValue(self):
 		self.tempHand = []
@@ -34,6 +35,7 @@ class Player(object):
 
 	def resetFlag(self):
 		self.betFlag = 0
+		self.round = 0
 
 	def setHand(self, card1, card2):
 		self.hand = [card1, card2]

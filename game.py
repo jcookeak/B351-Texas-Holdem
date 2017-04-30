@@ -5,7 +5,7 @@ Game.py
 Last modified: 40/20/17
 Last modified by: Anna
 """
-
+5
 import math
 import re
 import random
@@ -14,6 +14,9 @@ from player import *
 from human import *
 from no_bluff_player import *
 from card import *
+
+from hand_classification.texas_holdem_hand import *
+
 
 # Texas Hold'em Game Controller
 
@@ -60,150 +63,172 @@ class Deck(object):
 
 
 class Game(object):
-	def __init__(self, players, chips):
-		self.totalChips = chips * len(players)
-		self.history = [["initialized game"]]
-		self.history.append(["set chip ammount to " + str(chips)])
-		self.deck = Deck()
-		self.field = []
-		self.pot = 0
-		self.call = {}
-		self.allPlayers = players
-		self.players = players
-		for player in self.players:
-			player.setChips(chips)
-			player.setActiveGame(self)
-			self.history.append([player.getName() + " added"])
+        def __init__(self, players, chips):
+                self.gameRound = -1
+                self.totalChips = chips * len(players)
+                self.history = [["initialized game"]]
+                self.history.append(["set chip ammount to " + str(chips)])
+                self.deck = Deck()
+                self.field = []
+                self.pot = 0
+                self.call = {}
+                self.allPlayers = players
+                self.players = players
+                for player in self.players:
+                        player.setChips(chips)
+                        player.setActiveGame(self)
+                        self.history.append([player.getName() + " added"])
 
-	def __str__(self):
-		self.string = ""
-		for player in self.players:
-			self.string = self.string + "--" + (player.getName()) + "--\n"
-			self.string = self.string + "chips: " + str(player.chipAmount()) + "\n"
-			self.string = self.string + "hand: " + str(player.getHand()[0]) + ", " + str(player.getHand()[1]) + "\n"
-		self.string = self.string + ("--Game state--\n")
-		self.string = self.string + "current pot: " + str(self.pot) + "\n"
-		self.string = self.string + "field: "
-		for x in self.field:
-			self.string = self.string + "|" + str(x) + "| "
-		self.string = self.string + "\n"
+        def __str__(self):
+                self.string = ""
+                for player in self.players:
+                        self.string = self.string + "--" + (player.getName()) + "--\n"
+                        self.string = self.string + "chips: " + str(player.chipAmount()) + "\n"
+                        self.string = self.string + "hand: " + str(player.getHand()[0]) + ", " + str(player.getHand()[1]) + "\n"
+                self.string = self.string + ("--Game state--\n")
+                self.string = self.string + "current pot: " + str(self.pot) + "\n"
+                self.string = self.string + "field: "
+                for x in self.field:
+                        self.string = self.string + "|" + str(x) + "| "
+                self.string = self.string + "\n"
 
-		return self.string
+                return self.string
 
-	def revealedCards(self):
-		return self.field
+        def revealedCards(self):
+                return self.field
 
-	def startGame(self):
-		while len(self.players) > 0:
+
+        def startGame(self):
+                while len(self.players) > 1:#add check for winner
 			#self.newHand()
-			self.playHand()
+                        self.playHand()
 
-	def newHand(self):
-		self.history.append(["starting new hand"])
-		self.field = []
-		self.players = self.allPlayers
-		self.deck.shuffleDeck()
-		for player in self.players:
-			player.resetFlag()
-			player.setHand(self.deck.getCard(),self.deck.getCard())
-			self.history.append(["dealt two cards", player.getName()])
+        def newHand(self):
+                self.history.append(["starting new hand"])
+                self.gameRound = -1
+                self.field = []
+                self.players = self.allPlayers
+                self.deck.shuffleDeck()
+                for player in self.players:
+                        player.resetFlag()
+                        player.setHand(self.deck.getCard(),self.deck.getCard())
+                        self.history.append(["dealt two cards", player.getName()])
 
-	def playHand(self):
-		#pay anti
-		for player in self.players:
-			self.pot += player.collectAnti(1)
+        def playHand(self):
+                #pay anti
+                for player in self.players:
+                        self.pot += player.collectAnti(1)
 
-		self.newHand() # deal cards
-		self.roundOfBetting() #pre-flop betting
-		self.field.append(self.deck.getCard()) #flop
-		self.field.append(self.deck.getCard())
-		self.field.append(self.deck.getCard())
-		self.roundOfBetting() #post flop betting
-		self.field.append(self.deck.getCard()) #turn
-		self.roundOfBetting() #post turn betting
-		self.field.append(self.deck.getCard()) #river
-		self.roundOfBetting() #post river betting
+                self.newHand() # deal 2 cards
+                self.roundOf5ting() #pre-flop betting
+                #add 3 public cards
+                self.field.append(self.deck.getCard()) #flop
+                self.field.append(self.deck.getCard())
+                self.field.append(self.deck.getCard())
+                self.roundOfBetting() #post flop betting
+                self.field.append(self.deck.getCard()) #turn
+                self.roundOfBetting() #post turn betting
+                self.field.append(self.deck.getCard()) #river
+                self.roundOfBetting() #post river betting
 
-		self.resolveHand()
-		print(self)
+                self.resolveHand()
+                print(self)
 
-	def getMaxBet(self):
-		self.maxbet = self.totalChips
-		for player in players:
-			if player.chipAmount() < self.maxbet:
-				self.maxbet = player.chipAmount()
-		return self.maxbet
+        def getMaxBet(self):
+                self.maxbet = self.totalChips
+                for player in self.players:
+                        if player.chipAmount() < self.maxbet:
+                                self.maxbet = player.chipAmount()
+                        return self.maxbet
 
-	def roundOfBetting(self):
-		print(self)
+        def updatePlayers(self):
+                for p in self.allPlayers:
+                        if p.chips ==0:
+                                self.history.append(["Player out " + p.getName()])
+                                self.allPlayers.remove(p)
+                                if p in self.players: self.players.remove(p)
 
-		self.round = 0
+        def roundOfBetting(self):
+                print(self)
 
-		self.getMaxBet()
-		for x in players:
-			self.call[x.getName()] = 0
-		while self.round < 3:
-			if self.needToCall() == False and self.round == 0:
-				for player in players:
-					print("getting action for " + player.getName())
-					self.currentAction = player.action(self.maxbet)
-					if self.currentAction[0] == "bet":
-						self.history.append(["bet " + str(self.currentAction[1]), player.getName()])
-						for x in players:
-							self.call[x.getName()] += self.currentAction[1]
-						self.call[player.getName()] = 0
-						self.maxbet -= self.currentAction[1]
-						self.pot += self.currentAction[1]
-					elif self.currentAction[0] == "raise":
-						self.history.append(["raise " + str(self.currentAction[1]), player.getName()])
-						for x in players:
-							if x != player:
-								self.call[x.getName()] += self.currentAction[1]
-						self.maxbet = self.getMaxBet()
-						self.pot += self.call[player.getName()] + self.currentAction[1]
-						self.call[player.getName()] = 0
-					elif self.currentAction[0] == "call":
-						self.history.append(["call", player.getName()])
-						self.pot += self.call[player.getName()]
-						self.call[player.getName()] = 0
-					elif self.currentAction[0] == "check":
-						self.history.append(["check", player.getName()])
-					elif self.currentAction[0] == "fold":
-						self.players.remove(player)
-						self.history.append(["fold", player.getName()])
-			# elif self.needToCall == False:
-			# 	break
-			# 	# print(self)
-			else: #players must call
-				for player in players:
-					if self.call[player.getName()] > 0:
-						print("call or fold")
-						self.currentAction = player.action(self.maxbet)
-						if self.currentAction[0] == "call":
-							self.history.append(["call", player.getName()])
-							self.pot += self.call[player.getName()]
-							self.call[player.getName()] = 0
-						else:
-							self.players.remove(player)
-							self.history.append(["fold", player.getName()])
-							del self.call[player.getName()]
-			self.round += 1
+                self.round = 0
 
-	def needToCall(self):
-		for x in self.players:
-			if self.call[x.getName()] > 0:
-				return True
-		return False
+                self.gameRound+=1
+                self.history.append(["Round "+str(self.gameRound)])#round marker in history for checking bet vs raise
+                
+                self.getMaxBet()
+                for x in self.players:
+                        self.call[x.getName()] = 0
+                while self.round < 3:
+                        if self.needToCall() == False and self.round == 0:
+                                for player in self.players:
+                                        print("getting action for " + player.getName())
+                                        self.currentAction = player.action(self.maxbet)
+                                        if self.currentAction[0] == "bet":
+                                                self.history.append(["bet " + str(self.currentAction[1]), player.getName()])
+                                                for x in self.players:
+                                                        self.call[x.getName()] += self.currentAction[1]
+                                                self.call[player.getName()] = 0
+                                                self.maxbet -= self.currentAction[1]
+                                                self.pot += self.currentAction[1]
+                                        elif self.currentAction[0] == "raise":
+                                                self.history.append(["raise " + str(self.currentAction[1]), player.getName()])
+                                                for x in self.players:
+                                                        if x != player:
+                                                                self.call[x.getName()] += self.currentAction[1]
+                                                        self.maxbet = self.getMaxBet()
+                                                self.pot += self.call[player.getName()] + self.currentAction[1]
+                                                self.call[player.getName()] = 0
+                                        elif self.currentAction[0] == "call":
+                                                self.history.append(["call", player.getName()])
+                                                self.pot += self.call[player.getName()]
+                                                self.call[player.getName()] = 0
+                                        elif self.currentAction[0] == "check":
+                                                self.history.append(["check", player.getName()])
+                                        elif self.currentAction[0] == "fold":
+                                                self.players.remove(player)
+                                                self.history.append(["fold", player.getName()])
+                        # elif self.needToCall == False:
+                        # 	break
+                        # 	# print(self)
+                        else: #players must call
+                                for player in self.players:
+                                        if self.call[player.getName()] > 0:
+                                                print("call or fold")
+                                                self.currentAction = player.action(self.maxbet)
+                                                if self.currentAction[0] == "call":
+                                                        self.history.append(["call", player.getName()])
+                                                        self.pot += self.call[player.getName()]
+                                                        self.call[player.getName()] = 0
+                                                else:
+                                                        self.players.remove(player)
+                                                        self.history.append(["fold", player.getName()])
+                                                        del self.call[player.getName()]
+                        self.round += 1
+                        self.updatePlayers()
 
-	def callAmount(self, player):
-		return self.call[player.getName()]
+        def needToCall(self):
+                for x in self.players:
+                        if self.call[x.getName()] > 0:
+                                return True
+                return False
 
-	def resolveHand(self):
-		# payout pot to top player(s)
-		return -1
+        def callAmount(self, player):
+                return self.call[player.getName()]
 
-	def getHistory(self):
-		return self.history
+        def resolveHand(self):
+                # payout pot to top player(s)
+
+                #fix this!!!
+
+                for p in self.players:
+                        
+                
+                
+                return -1
+
+        def getHistory(self):
+                return self.history
 
 c0 = Card(0)
 c11 = Card(11)
@@ -228,8 +253,8 @@ p1 = NoBluffPlayer()#HumanPlayer()
 p1.setName("p1")
 p2 = NoBluffPlayer()#HumanPlayer()
 p2.setName("p2")
-players = [p0,p1,p2]
-game = Game(players, 200)
+players1 = [p0,p1,p2]
+game = Game(players1, 200)
 
 p0.setHistory(game.getHistory())
 p1.setHistory(game.getHistory())
