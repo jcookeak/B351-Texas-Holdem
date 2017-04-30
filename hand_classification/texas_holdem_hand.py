@@ -104,7 +104,7 @@ class Hand():
     sorting function, by card value: 2-ace; returns sorted list
     """
     def sortByValue(self, cards):
-        return sorted(cards, key=lambda x: x%13)
+        return sorted(cards, key=lambda x: x % 13)
     """
     sorts cards by suit, returns sorted list lowest to highest by suit then card
     """
@@ -235,6 +235,7 @@ class Hand():
     returns a boolean
     """
     def straight(self):
+        if len(self.cards)<5:return False
         temp = self.sortByValue(self.cards)
         n = temp[0]%13
         for c in temp:
@@ -247,7 +248,7 @@ class Hand():
     returns a boolean
     """
     def flush(self):
-        if len(self.cards)<1:return False
+        if len(self.cards)<5:return False
         newcards = self.sortBySuit(self.cards)
         pred = abs(newcards[0]-newcards[-1])<13
         return pred

@@ -26,9 +26,10 @@ deck = full_deck[0:27]
         # give x cards, find best hand
         # compare against best hand found for each random combination
 
-def better_hand_outs(cards, threshold = [False, "high"]):
+        #depth is how many soft outs we want to calculate from current state
+def better_hand_outs(cards, threshold = [False, "high"], depth = 1): 
     outs = set()
-
+    soft_outs = set()
     cards = np.asarray(cards)
     private = np.asarray([cards[0], cards[1]])
     public = np.setdiff1d(cards, private)
@@ -36,11 +37,18 @@ def better_hand_outs(cards, threshold = [False, "high"]):
     post_flop_outs = np.setdiff1d(np.asarray(full_deck), cards)
     #pool of available cards left in deck
     pool = np.setdiff1d(np.asarray(full_deck), cards)
-    fill_cards = list(it.combinations(np.unique(pool),1))
+    if (len(cards) < 5):
+        fill_cards = list(it.combinations(np.unique(pool),3))        
+    else:
+        fill_cards = list(it.combinations(np.unique(pool),1))
+
+    print(fill_cards)
     known_cards = []
     for x in (np.append(private, public)):
         known_cards.append(x.val)
+    print("best cards" + str(known_cards))
     best_hand = Hand(Hand(known_cards).best_hand()).is_hand()
+    print(best_hand)
     for x in fill_cards:
         for p in it.combinations(np.unique(np.append(private, public)), 4):
             temp_pool = np.append(p, x)
@@ -51,11 +59,21 @@ def better_hand_outs(cards, threshold = [False, "high"]):
             if(temp_hand.better_hand_check(threshold, temp_hand.is_hand())):
                 if (temp_hand.better_hand_check(best_hand, temp_hand.is_hand())):     
                     outs.add(x)
+
+            # temp_cards = []
+            # if (depth > 1):
+            #     for x in temp_hand.cards:
+            #         temp_cards.append(Card(x))
+            #     print("temp+cards" + str(temp_cards))
+            #     print(better_hand_outs(p, threshold, depth-1)[1])
     #print(best_hand)
     print(outs)
-    print(len(outs))
-    print(len(fill_cards))
-    return (len(outs)/len(fill_cards))
+    print("soft_outs:"+ str(soft_outs))
+    print("number of outs: " + str(len(outs)))
+    print("number of cards in deck: " + str(len(fill_cards)))
+    if (len(outs) == 0):
+        return (0, outs)
+    return (len(fill_cards)/len(outs), outs)
 
 
 
@@ -72,13 +90,13 @@ def hand_rank_7(cards):
         #cards to add
         add_num = 5 - public.size
         fill_cards = list(it.combinations(np.unique(pool),add_num))
-        print("fill cards" + str(fill_cards))
         #print(np.append(private,public))
         l = []
         temp = np.append(private,public).tolist()
         for x in temp:
                 l.append(x.val)
         hand = Hand(l)
+        print("best hand: " + str(hand.best_hand()))
         #print (hand.hand_val())
         set_max = 0
         for x in fill_cards:
@@ -132,3 +150,7 @@ def hand_rank_7(cards):
 
 #returns odds of getting a better hand, with min threshold
 print(better_hand_outs([full_deck[0], full_deck[1], full_deck[16], full_deck[4], full_deck[13], full_deck[26]], [True, "straight"]))
+print(better_hand_outs([full_deck[0], full_deck[1], full_deck[16], full_deck[4], full_deck[13], full_deck[26], full_deck[42]], [True, "straight"]))
+
+print(better_hand_outs([full_deck[12], full_deck[24]]))
+
