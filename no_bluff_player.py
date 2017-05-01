@@ -84,7 +84,7 @@ class NoBluffPlayer(Player):
 
 
                 # didn't fold before flop so need to check or call
-                moves = self.legal_moves(self.history)#get possible moves
+                moves = self.legal_moves(self.history, maxbet)#get possible moves
                 if self.round == 0:# don't want to bet first round
                         if "bet" in moves: moves.remove("bet")
                         if "raise" in moves: moves.remove("raise")
@@ -134,10 +134,10 @@ class NoBluffPlayer(Player):
                 10:[9,10,10,10,11,11,13,15,18,19], 11:[11,11,11,12,12,13,13,15,18,20,21],
                 12:[13,14,14,15,14,14,15,16,19,20,22,24]}
                 unsuited = {1:[1], 2:[2,3],3:[2,4,5], 4:[1,3,4,6], 5:[0,1,1,3,5,6],
-                6:[0,1,2,4,5,7],7:[1,1,1,3,4,6,8],8:[2,2,2,2,4,6,8,10], 
+                6:[0,1,2,4,5,7],7:[1,1,1,3,4,6,8],8:[2,2,2,2,4,6,8,10],
                 9:[2,2,3,3,3,5,7,9,13], 10:[3,3,4,4,4,5,7,9,12,14],11:[4,5,5,5,6,6,7,9,13,14,16],
                 12:[7,7,8,8,7,8,9,10,13,14,16,19]}
-                
+
                 if (c2 > c1):
                         tempc = c1
                         c1 = c2
@@ -150,24 +150,6 @@ class NoBluffPlayer(Player):
                         return suited[c1][c2]
                 else:
                         return unsuited[c1][c2]
-
-
-
-        def legal_moves(self, history):
-                if self.haveBet(history): moves = set(["call"])#bet has occured
-                else: moves= set(["check"])#bet has not occured
-                if not self.betFlag:
-                        if "check" in moves: moves.add("bet")
-                        else: moves.add("raise")
-                if self.chips: moves.add("fold")#check for all in, don't fold if no chips are left
-                return moves
-
-        def haveBet(self, history):#TODO: check for hand end, check for round end
-                for i in range(-1, -1*len(history), -1):
-                    if ("Round" in history[i]):
-                        break
-                    if ("bet" in history[i]) or ("raise" in history[i]) or ("call" in history[i]):return True
-                return False
 
         def callRound(self, history):
             for i in range(-1, -1*len(history), -1):

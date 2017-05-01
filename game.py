@@ -27,6 +27,7 @@ from human import *
 from no_bluff_player import *
 from card import *
 from random_player import *
+from EV_script import *
 
 from hand_classification.texas_holdem_hand import *
 
@@ -281,7 +282,7 @@ c50 = Card(50)
 # p2 = Player()
 # p2.setName("p2")
 
-p0 = RandomPlayer()#NoBluffPlayer()#HumanPlayer()
+p0 = NoBluffPlayer()#HumanPlayer()
 p0.setName("p0")
 p1 = RandomPlayer()#NoBluffPlayer()#HumanPlayer()
 p1.setName("p1")
