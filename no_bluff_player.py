@@ -13,6 +13,7 @@ check bet ammount for legality
 from player import *
 from hand_classification.texas_holdem_hand import *
 import random
+from EV_script import *
 
 class NoBluffPlayer(Player):
         def __init__(self, history = [], chips=0, af=0):

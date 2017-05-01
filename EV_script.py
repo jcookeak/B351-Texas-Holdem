@@ -29,8 +29,8 @@ deck = full_deck[0:27]
         #depth is how many soft outs we want to calculate from current state
 def better_hand_outs(cards_known, checked_cards = [], threshold = [False, "high"]): 
     #print(depth)
-    if (depth <= 0):
-        return (0, set())
+    # if (depth <= 0):
+    #     return (0, set())
     outs = set()
     soft_outs = set()
     cards = np.asarray(cards_known)
