@@ -27,7 +27,7 @@ from human import *
 from no_bluff_player import *
 from card import *
 from random_player import *
-from EV_script import *
+#from EV_script import *
 
 from hand_classification.texas_holdem_hand import *
 
@@ -114,7 +114,7 @@ class Game(object):
 
 
         def startGame(self):
-                while len(self.players) > 1:#add check for winner
+                while len(self.allPlayers) > 1:#add check for winner
 			#self.newHand()
                         self.playHand()
 
@@ -122,7 +122,7 @@ class Game(object):
                 self.history.append(["starting new hand"])
                 self.gameRound = -1
                 self.field = []
-                self.players = self.allPlayers
+                self.players = self.allPlayers[:]
                 self.deck.shuffleDeck()
                 for player in self.players:
                         player.resetFlag()
@@ -177,6 +177,7 @@ class Game(object):
                 self.history.append(["Round"])#round marker in history for checking bet vs raise
 
                 self.getMaxBet()
+                self.current_bet = 0
                 for x in self.players:
                         self.call[x.getName()] = 0
                 while self.round < 3:
@@ -252,6 +253,7 @@ class Game(object):
             self.history.append(["End of Hand"])
             self.updatePlayers()
 
+
         def better_hand(self, h1, h2):#takes two Hand class objects
             v1, v2 = h1.hand_val(), h2.hand_val()
             if v1 > v2:pass
@@ -282,7 +284,7 @@ c50 = Card(50)
 # p2 = Player()
 # p2.setName("p2")
 
-p0 = NoBluffPlayer()#HumanPlayer()
+p0 = RandomPlayer()#NoBluffPlayer()#HumanPlayer()
 p0.setName("p0")
 p1 = RandomPlayer()#NoBluffPlayer()#HumanPlayer()
 p1.setName("p1")

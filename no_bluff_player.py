@@ -118,7 +118,7 @@ class NoBluffPlayer(Player):
                         else:
                                 return ["fold", 0]
                 else:
-                        if (needBet/self.chips >= (better_hand_outs(self.hand + self.game.field) - 1)):
+                        if (needBet/self.game.pot >= (better_hand_outs(self.hand + self.game.field)[0] - 1)):
                                 bet = needBet - self.current_bet
                                 return ["call", bet]
                 return ["fold", 0]

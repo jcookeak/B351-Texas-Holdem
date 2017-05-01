@@ -57,11 +57,15 @@ class RandomPlayer(Player):
                 #print(move)
 
                 #if move == "fold": self.round = 0
-                if move == "call" or move =="check": return [move, self.game.callAmount(self)]
+                if move =="check":
+                    return [move, 0]
+                if move == "call":
+                    self.chips -= self.game.callAmount(self)
+                    return [move, self.game.callAmount(self)]
                 if move == "raise" or move =="bet": #bet randomly for now
                         if maxbet>1:bet = random.randrange(maxbet)+1
                         else: bet = maxbet
-                        print ("bet", bet)
+                        #print ("bet", bet)
                         self.chips -= bet + self.game.callAmount(self)
                         self.betFlag = 1
                         return [move, bet]
@@ -71,11 +75,13 @@ class RandomPlayer(Player):
 
         #this function is called if a player needs to call a bet to stay in the hand
         def callRoundAction(self, needBet):
-            moves = ["call", "fold"]
+            moves = ["call"]#, "fold"]
             num = random.randrange(len(moves))
             move = moves[num]
             if move == "call":
-                bet = needBet - self.current_bet
+                bet = self.game.callAmount(self)
+                #bet = needBet - self.current_bet
+                self.chips -= bet
                 return ["call", bet]
             return ["fold", 0]
 

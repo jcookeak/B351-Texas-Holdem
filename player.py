@@ -1,6 +1,7 @@
 #from game import *
 
 # Player default class
+import re
 
 class Player(object):
 	def __init__(self):
@@ -50,16 +51,17 @@ class Player(object):
 		# call
 		# check
 		# fold
-		return(["check", 0])
+		return(["fold", 0])
 
 	def collectAnti(self, amount):
 		self.chips -= amount
 		return amount
 
 	def legal_moves(self, history, maxbet):
-			if self.haveBet(history): moves = set(["call"])#bet has occured
+			moves = set()
+			if self.haveBet(history): moves.add("call")#bet has occured
 			else: moves= set(["check"])#bet has not occured
-			if not self.betFlag and maxbet>0:
+			if (not self.betFlag) and maxbet>0:
 					if "check" in moves: moves.add("bet")
 					else: moves.add("raise")
 			if self.chips: moves.add("fold")#check for all in, don't fold if no chips are left
@@ -67,9 +69,10 @@ class Player(object):
 
 	def haveBet(self, history):#TODO: check for hand end, check for round end
 			for i in range(-1, -1*len(history), -1):
-				if ("Round" in history[i]):
-					break
-				if ("bet" in history[i]) or ("raise" in history[i]) or ("call" in history[i]):return True
+
+				if ("Round" in history[i]): return False
+				#parsing issue
+				if re.match ("bet*", history[i][0]) or ("raise" in history[i]) or ("call" in history[i]):return True
 			return False
 
 	def chipAmount(self):

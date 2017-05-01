@@ -27,7 +27,7 @@ deck = full_deck[0:27]
         # compare against best hand found for each random combination
 
         #depth is how many soft outs we want to calculate from current state
-def better_hand_outs(cards_known, checked_cards = [], threshold = [False, "high"]): 
+def better_hand_outs(cards_known, checked_cards = [], threshold = [False, "high"]):
     #print(depth)
     # if (depth <= 0):
     #     return (0, set())
@@ -57,16 +57,16 @@ def better_hand_outs(cards_known, checked_cards = [], threshold = [False, "high"
         combin_n = len(cards_known)
     for x in fill_cards:
         for p in it.combinations(np.unique(np.append(private, public)), combin_n):
-            print("p ", p)
+            #print("p ", p)
             temp_pool = np.append(p, x)
             temp_check = []
             for x in temp_pool:
                 temp_check.append(x.val)
             temp_hand = Hand(temp_check)
             if(temp_hand.better_hand_check(threshold, temp_hand.is_hand())):
-                print("above threshold")
-                if (temp_hand.better_hand_check(best_hand, temp_hand.is_hand())):     
-                    print("new best found")
+                #print("above threshold")
+                if (temp_hand.better_hand_check(best_hand, temp_hand.is_hand())):
+                    #print("new best found")
                     outs.add(x)
             # else:
             #     #print("recur depth: ", depth)
@@ -84,10 +84,13 @@ def better_hand_outs(cards_known, checked_cards = [], threshold = [False, "high"
             #     print("temp+cards" + str(temp_cards))
             #     print(better_hand_outs(p, threshold, depth-1)[1])
     #print(best_hand)
+    """
     print(outs)
     print("soft_outs:"+ str(soft_outs))
     print("number of outs: " + str(len(outs)))
     print("number of cards in deck: " + str(len(fill_cards)))
+    """
+
     if (len(outs) == 0):
         return (0, outs)
     return (len(fill_cards)/len(outs), outs)
@@ -157,14 +160,14 @@ def hand_rank_7(cards):
         #print("eval: ")
         #print(evaluated)
         #print("done?")
-        print("EV: " + str(wins/evaluated))
+        #print("EV: " + str(wins/evaluated))
 
 #print(Hand([0,13,2,3,4]).hand_val())
 
 # card_combos = it.combinations(np.unique(np.asarray(deck)), 2)
 # for x in card_combos:
 #         print("evaluating starting hand: " + str(x))
-
+"""
 #returns odds of getting a better hand, with min threshold
 print(better_hand_outs([full_deck[0], full_deck[1], full_deck[16], full_deck[4], full_deck[13], full_deck[26]], [], [True, "straight"]))
 #print(better_hand_outs([full_deck[0], full_deck[1], full_deck[16], full_deck[4], full_deck[13], full_deck[26], full_deck[42]], [True, "straight"]))
@@ -173,4 +176,4 @@ print(better_hand_outs([full_deck[12], full_deck[25]], []))
 
 h = Hand([12,25])
 print(h.better_hand_check([False, "high"], [True, "single"]))
-
+"""
