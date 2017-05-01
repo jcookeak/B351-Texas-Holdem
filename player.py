@@ -8,6 +8,7 @@ class Player(object):
 		self.hand = [-1, -1]
 		self.betFlag = 0
 		self.round = 0
+		self.chips = 0
 
 	def handToValue(self):
 		self.tempHand = []
@@ -49,11 +50,27 @@ class Player(object):
 		# call
 		# check
 		# fold
-		return(["check"])
+		return(["check", 0])
 
 	def collectAnti(self, amount):
 		self.chips -= amount
 		return amount
+
+	def legal_moves(self, history, maxbet):
+			if self.haveBet(history): moves = set(["call"])#bet has occured
+			else: moves= set(["check"])#bet has not occured
+			if not self.betFlag and maxbet>0:
+					if "check" in moves: moves.add("bet")
+					else: moves.add("raise")
+			if self.chips: moves.add("fold")#check for all in, don't fold if no chips are left
+			return moves
+
+	def haveBet(self, history):#TODO: check for hand end, check for round end
+			for i in range(-1, -1*len(history), -1):
+				if ("Round" in history[i]):
+					break
+				if ("bet" in history[i]) or ("raise" in history[i]) or ("call" in history[i]):return True
+			return False
 
 	def chipAmount(self):
 		return self.chips

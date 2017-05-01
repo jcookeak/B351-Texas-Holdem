@@ -2,8 +2,20 @@
 """
 Game.py
 
-Last modified: 40/20/17
+Last modified: 5/1/17
 Last modified by: Anna
+
+What this file does:
+runs a poker simulation
+creates a list of poker players
+calls cation on each player
+finds winner
+
+Current player types:
+human
+random
+no bluff
+
 """
 5
 import math
@@ -14,6 +26,7 @@ from player import *
 from human import *
 from no_bluff_player import *
 from card import *
+from random_player import *
 
 from hand_classification.texas_holdem_hand import *
 
@@ -268,11 +281,11 @@ c50 = Card(50)
 # p2 = Player()
 # p2.setName("p2")
 
-p0 = NoBluffPlayer()#HumanPlayer()
+p0 = RandomPlayer()#NoBluffPlayer()#HumanPlayer()
 p0.setName("p0")
-p1 = NoBluffPlayer()#HumanPlayer()
+p1 = RandomPlayer()#NoBluffPlayer()#HumanPlayer()
 p1.setName("p1")
-p2 = NoBluffPlayer()#HumanPlayer()
+p2 = RandomPlayer()#NoBluffPlayer()#HumanPlayer()
 p2.setName("p2")
 players1 = [p0,p1,p2]
 game = Game(players1, 200)
