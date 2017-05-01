@@ -56,7 +56,7 @@ class Deck(object):
                 self.deck = self.deck + self.used
                 self.used = []
                 random.shuffle(self.deck)
-                
+
 	# def deal(self, n):
 	# 	for x in range(0,n):
 
@@ -73,6 +73,7 @@ class Game(object):
                 self.pot = 0
                 self.call = {}
                 self.allPlayers = players
+                self.current_bet = 0
                 self.players = players
                 for player in self.players:
                         player.setChips(chips)
@@ -120,17 +121,19 @@ class Game(object):
                         self.pot += player.collectAnti(1)
 
                 self.newHand() # deal 2 cards
-                self.roundOf5ting() #pre-flop betting
+                self.roundOfBetting() #pre-flop betting
+                if(not self.checkEndHand()):
                 #add 3 public cards
-                self.field.append(self.deck.getCard()) #flop
-                self.field.append(self.deck.getCard())
-                self.field.append(self.deck.getCard())
-                self.roundOfBetting() #post flop betting
-                self.field.append(self.deck.getCard()) #turn
-                self.roundOfBetting() #post turn betting
-                self.field.append(self.deck.getCard()) #river
-                self.roundOfBetting() #post river betting
-
+                    self.field.append(self.deck.getCard()) #flop
+                    self.field.append(self.deck.getCard())
+                    self.field.append(self.deck.getCard())
+                    self.roundOfBetting() #post flop betting
+                if(not self.checkEndHand()):
+                    self.field.append(self.deck.getCard()) #turn
+                    self.roundOfBetting() #post turn betting
+                if(not self.checkEndHand()):
+                    self.field.append(self.deck.getCard()) #river
+                    self.roundOfBetting() #post river betting
                 self.resolveHand()
                 print(self)
 
@@ -147,15 +150,18 @@ class Game(object):
                                 self.history.append(["Player out " + p.getName()])
                                 self.allPlayers.remove(p)
                                 if p in self.players: self.players.remove(p)
+        def checkEndHand(self):
+            if len(self.players)<2:return True
+            return False
+
 
         def roundOfBetting(self):
                 print(self)
 
                 self.round = 0
-
                 self.gameRound+=1
-                self.history.append(["Round "+str(self.gameRound)])#round marker in history for checking bet vs raise
-                
+                self.history.append(["Round"])#round marker in history for checking bet vs raise
+
                 self.getMaxBet()
                 for x in self.players:
                         self.call[x.getName()] = 0
@@ -170,6 +176,7 @@ class Game(object):
                                                         self.call[x.getName()] += self.currentAction[1]
                                                 self.call[player.getName()] = 0
                                                 self.maxbet -= self.currentAction[1]
+                                                self.current_bet += self.currentAction[1]
                                                 self.pot += self.currentAction[1]
                                         elif self.currentAction[0] == "raise":
                                                 self.history.append(["raise " + str(self.currentAction[1]), player.getName()])
@@ -177,6 +184,7 @@ class Game(object):
                                                         if x != player:
                                                                 self.call[x.getName()] += self.currentAction[1]
                                                         self.maxbet = self.getMaxBet()
+                                                self.current_bet += self.currentAction[1]
                                                 self.pot += self.call[player.getName()] + self.currentAction[1]
                                                 self.call[player.getName()] = 0
                                         elif self.currentAction[0] == "call":
@@ -192,8 +200,9 @@ class Game(object):
                         # 	break
                         # 	# print(self)
                         else: #players must call
+                                self.history.append(["Call Round", self.current_bet])
                                 for player in self.players:
-                                        if self.call[player.getName()] > 0:
+                                        if self.call[player.getName()] > 0:#check if any player needs to call
                                                 print("call or fold")
                                                 self.currentAction = player.action(self.maxbet)
                                                 if self.currentAction[0] == "call":
@@ -205,7 +214,6 @@ class Game(object):
                                                         self.history.append(["fold", player.getName()])
                                                         del self.call[player.getName()]
                         self.round += 1
-                        self.updatePlayers()
 
         def needToCall(self):
                 for x in self.players:
@@ -217,27 +225,40 @@ class Game(object):
                 return self.call[player.getName()]
 
         def resolveHand(self):
-                # payout pot to top player(s)
+            # payout pot to top player(s)
 
-                #fix this!!!
+            #fix this!!!
+            if len(self.players)<1:return
+            elif len(self.players)>1:
+                self.players =  sorted(self.players, key=lambda x: Hand(x.getBestHand()).hand_val())
+            Winner = self.players[0]
+            Winner.chips+=self.pot
+            self.pot = 0
+            self.history.append(["Winner: "+Winner.getName()])
+            self.history.append(["End of Hand"])
+            self.updatePlayers()
 
-                for p in self.players:
-                        
-                
-                
-                return -1
+        def better_hand(self, h1, h2):#takes two Hand class objects
+            v1, v2 = h1.hand_val(), h2.hand_val()
+            if v1 > v2:pass
+            if v2>v1:pass
+            else:pass
 
         def getHistory(self):
                 return self.history
 
+
+##########################################################
+
+##########################################################
 c0 = Card(0)
 c11 = Card(11)
 c12 = Card(12)
 c13 = Card(13)
 c50 = Card(50)
 
-deck = Deck()
-print(deck)
+#deck = Deck()
+#print(deck)
 #print deck.getCard()
 
 # p0 = Player()
@@ -260,12 +281,13 @@ p0.setHistory(game.getHistory())
 p1.setHistory(game.getHistory())
 p2.setHistory(game.getHistory())
 
-
 print(game)
 game.startGame()
 print(game)
 for x in game.getHistory():
 	print(x)
+
+
 # while(p.chipAmount() > 0):
 # 	p.action(p.chipAmount())
 
