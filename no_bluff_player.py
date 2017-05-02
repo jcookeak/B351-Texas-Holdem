@@ -1,7 +1,7 @@
 # no bluff player
 
 """
-Last modified: 4/20/17
+Last modified: 5/2/17
 Last modified by: Anna
 
 Things to fix:
@@ -67,7 +67,7 @@ class NoBluffPlayer(Player):
 
 
         def action(self, maxbet):
-                print(self.round)
+                #print(self.round)#for testing
                 # pre flop check
                 isCallRound = self.callRound(self.history)
                 if isCallRound:
@@ -81,7 +81,7 @@ class NoBluffPlayer(Player):
                 """
 
                 #for now, bet the maximum:
-                current_bet = maxbet
+                #current_bet = maxbet
 
 
                 # didn't fold before flop so need to check or call
@@ -95,9 +95,10 @@ class NoBluffPlayer(Player):
                 num = random.randrange(len(moves))
                 move = list(moves)[num]
 
-                print(move)
+                #print(move)#for testing
 
                 #if move == "fold": self.round = 0
+                if move == "call": self.chips-=self.game.callAmount(self)
                 if move == "call" or move =="check": return [move, self.game.callAmount(self)]
                 if move == "raise" or move =="bet": #bet randomly for now
                         if maxbet>1:bet = random.randrange(1, maxbet+1)
@@ -113,13 +114,17 @@ class NoBluffPlayer(Player):
         def callRoundAction(self, needBet):
                 if (self.round == 0):
                         if needBet/self.chips >= (0.1 * self.preflop_call_percent()):
-                                bet = needBet - self.current_bet
+                                bet = self.game.callAmount(self)#current_bet is not reliable
+                                #needBet - self.current_bet
+                                self.chips -= bet#subtract bet from chips
                                 return ["call", bet]
                         else:
                                 return ["fold", 0]
                 else:
                         if (needBet/self.game.pot >= (better_hand_outs(self.hand + self.game.field)[0] - 1)):
-                                bet = needBet - self.current_bet
+                                bet = self.game.callAmount(self)#current_bet is not reliable
+                                #needBet - self.current_bet
+                                self.chips -= bet#subtract bet from chips
                                 return ["call", bet]
                 return ["fold", 0]
 

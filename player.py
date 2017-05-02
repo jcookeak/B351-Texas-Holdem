@@ -9,6 +9,7 @@ class Player(object):
 		self.hand = [-1, -1]
 		self.betFlag = 0
 		self.round = 0
+		self.current_bet = 0
 		self.chips = 0
 
 	def handToValue(self):
@@ -38,6 +39,7 @@ class Player(object):
 	def resetFlag(self):
 		self.betFlag = 0
 		self.round = 0
+		self.current_bet = 0
 
 	def setHand(self, card1, card2):
 		self.hand = [card1, card2]

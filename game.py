@@ -2,7 +2,7 @@
 """
 Game.py
 
-Last modified: 5/1/17
+Last modified: 5/2/17
 Last modified by: Anna
 
 What this file does:
@@ -123,6 +123,10 @@ class Game(object):
                 self.gameRound = -1
                 self.field = []
                 self.players = self.allPlayers[:]
+                #collect anti from players
+                for player in self.players:
+                        self.pot += player.collectAnti(1)
+
                 self.deck.shuffleDeck()
                 for player in self.players:
                         player.resetFlag()
@@ -131,9 +135,6 @@ class Game(object):
 
         def playHand(self):
                 #pay anti
-                for player in self.players:
-                        self.pot += player.collectAnti(1)
-
                 self.newHand() # deal 2 cards
                 self.roundOfBetting() #pre-flop betting
                 if(not self.checkEndHand()):
@@ -254,17 +255,22 @@ class Game(object):
                 for x in self.players:
                     if Hand(self.players[0].getBestHand()).hand_val() == Hand(x.getBestHand()).hand_val():
                         winners.append(x)
-                payout = math.floor(self.pot / len(winners))
-                self.history.append(["multiple winners, pot split"])
-                for x in winners:
-                    x.chips += payout
-                    self.history.append(["Winner: "+ x.getName()])
-                self.pot = self.pot % len(winners)
-            else:    
-                Winner = self.players[0]
-                Winner.chips+=self.pot
-                self.pot = 0
-                self.history.append(["Winner: "+Winner.getName()])
+                if len(winners)>1:
+                    payout = math.floor(self.pot / len(winners))
+                    print ("multiple winners ",len(winners), self.pot, payout, self.pot/len(winners))
+                    self.history.append(["multiple winners, pot split"])
+                    for x in winners:
+                        x.chips += payout
+                        self.history.append(["Winner: "+ x.getName()])
+                        self.pot = self.pot % len(winners)
+                        print("pot ", self.pot)
+                    self.history.append(["End of Hand"])
+                    return
+
+            Winner = self.players[0]
+            Winner.chips+=self.pot
+            self.pot = 0
+            self.history.append(["Winner: "+Winner.getName()])
             self.history.append(["End of Hand"])
             self.updatePlayers()
 
@@ -299,7 +305,7 @@ c50 = Card(50)
 # p2 = Player()
 # p2.setName("p2")
 
-p0 = RandomPlayer()#NoBluffPlayer()#HumanPlayer()
+p0 = NoBluffPlayer()#HumanPlayer()
 p0.setName("p0")
 p1 = RandomPlayer()#NoBluffPlayer()#HumanPlayer()
 p1.setName("p1")
