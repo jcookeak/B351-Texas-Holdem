@@ -114,6 +114,7 @@ class Game(object):
 
 
         def startGame(self):
+                self.deck.shuffleDeck()
                 while len(self.allPlayers) > 1:#add check for winner
             #self.newHand()
                         self.playHand()
@@ -309,7 +310,7 @@ p0 = NoBluffPlayer()#HumanPlayer()
 p0.setName("p0")
 p1 = RandomPlayer()#NoBluffPlayer()#HumanPlayer()
 p1.setName("p1")
-p2 = RandomPlayer()#NoBluffPlayer()#HumanPlayer()
+p2 = NoBluffPlayer()#HumanPlayer()RandomPlayer()
 p2.setName("p2")
 players_list = [p0,p1,p2]
 chip_amount = 200
@@ -328,6 +329,32 @@ print(game)
 print("players: " + str(game.players[0].name) + ", chips: " + str(game.players[0].chips))
 print("all players " + str(game.allPlayers))
 
+del game
+
+games_to_run = 5
+counter_games = 0
+player_wins = {p0:0, p1:0, p2:0}
+game = 0
+games = []
+for x in range(games_to_run):
+    games.append(Game(players_list,chip_amount))
+while counter_games < games_to_run:
+    del game
+    game = games[counter_games]
+    game.startGame()
+    print(counter_games)
+    print(str(game.players[0].hand))
+    if str(game.players[0].name) == "p0":
+        player_wins[p0] += 1
+    if str(game.players[0].name) == "p1":
+        player_wins[p1] += 1
+    if str(game.players[0].name) == "p2":
+        player_wins[p2] += 1
+    counter_games += 1
+
+print("player p0 wins: " + str(player_wins[p0]))
+print("player p1 wins: " + str(player_wins[p1]))
+print("player p2 wins: " + str(player_wins[p2]))
 # while(p.chipAmount() > 0):
 #   p.action(p.chipAmount())
 

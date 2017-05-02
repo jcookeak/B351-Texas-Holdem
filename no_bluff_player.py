@@ -75,10 +75,10 @@ class NoBluffPlayer(Player):
                 self.checkHand = Hand(self.handToValue())
                 self.temp = self.checkHand.sortByValue(self.handToValue())
                 self.bestHand = self.checkHand.best_hand()
-                """
+                
                 if self.round==0 and self.checkFoldPreFlop():#should probably only check this at the begining of a hand
                         return (["fold"])
-                """
+                
 
                 #for now, bet the maximum:
                 #current_bet = maxbet
