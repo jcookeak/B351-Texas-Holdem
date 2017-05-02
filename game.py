@@ -188,6 +188,7 @@ class Game(object):
                                 for player in self.players:
                                         print("getting action for " + player.getName())
                                         self.currentAction = player.action(self.maxbet)
+                                        print("player action: " + self.currentAction[0])
                                         if self.currentAction[0] == "bet":
                                                 self.history.append(["bet " + str(self.currentAction[1]), player.getName()])
                                                 for x in self.players:
@@ -252,8 +253,8 @@ class Game(object):
                 winners = []
                 for x in self.players:
                     if Hand(self.players[0].getBestHand()).hand_val() == Hand(x.getBestHand()).hand_val():
-                        winners.append[x]
-                payout = floor(self.pot / len(winners))
+                        winners.append(x)
+                payout = math.floor(self.pot / len(winners))
                 self.history.append(["multiple winners, pot split"])
                 for x in winners:
                     x.chips += payout

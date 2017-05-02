@@ -3,4 +3,4 @@ Texas Hold'em Final Project
 
 ## Current Status
 1. fixed negative chip amounts
-2. currently breaks when a player's chips hit zero but they are still in the game.
+2. Game sometimes ends with player having more or less than total amount
