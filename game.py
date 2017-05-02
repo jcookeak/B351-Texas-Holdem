@@ -38,14 +38,14 @@ from hand_classification.texas_holdem_hand import *
 #Anti for Hand
 #Deal Two Cards to each player
 #--Turn Order--
-	# Bet
-	# flip 3
-	#bet
-	#deal 1 card
-	#bet
-	#deal 1 card
-	#bet
-	#resolve
+    # Bet
+    # flip 3
+    #bet
+    #deal 1 card
+    #bet
+    #deal 1 card
+    #bet
+    #resolve
 
 
 class Deck(object):
@@ -71,8 +71,8 @@ class Deck(object):
                 self.used = []
                 random.shuffle(self.deck)
 
-	# def deal(self, n):
-	# 	for x in range(0,n):
+    # def deal(self, n):
+    #   for x in range(0,n):
 
 
 
@@ -115,7 +115,7 @@ class Game(object):
 
         def startGame(self):
                 while len(self.allPlayers) > 1:#add check for winner
-			#self.newHand()
+            #self.newHand()
                         self.playHand()
 
         def newHand(self):
@@ -152,15 +152,18 @@ class Game(object):
                 print(self)
 
         def getMaxBet(self):
-                self.maxbet = self.totalChips
-                for player in self.players:
-                        if player.chipAmount() < self.maxbet:
-                                self.maxbet = player.chipAmount()
-                        return self.maxbet
+            self.maxbet = self.totalChips
+            for player in self.players:
+                if player.chipAmount() < self.maxbet:
+                    self.maxbet = player.chipAmount()
+            return self.maxbet
 
         def updatePlayers(self):
                 for p in self.allPlayers:
-                        if p.chips ==0:
+                        # if p.chips > (chip_amount * (len(players_list) + 1)):
+                        #     print("player: " + p.name + " chips: " + str(p.chips))
+                        #     raise ValueError("player chips exceed total amount")
+                        if p.chips <= 0:
                                 self.history.append(["Player out " + p.getName()])
                                 self.allPlayers.remove(p)
                                 if p in self.players: self.players.remove(p)
@@ -171,7 +174,7 @@ class Game(object):
 
         def roundOfBetting(self):
                 print(self)
-
+                #self.updatePlayers()
                 self.round = 0
                 self.gameRound+=1
                 self.history.append(["Round"])#round marker in history for checking bet vs raise
@@ -212,8 +215,8 @@ class Game(object):
                                                 self.players.remove(player)
                                                 self.history.append(["fold", player.getName()])
                         # elif self.needToCall == False:
-                        # 	break
-                        # 	# print(self)
+                        #   break
+                        #   # print(self)
                         else: #players must call
                                 self.history.append(["Call Round", self.current_bet])
                                 for player in self.players:
@@ -246,10 +249,21 @@ class Game(object):
             if len(self.players)<1:return
             elif len(self.players)>1:
                 self.players =  sorted(self.players, key=lambda x: Hand(x.getBestHand()).hand_val())
-            Winner = self.players[0]
-            Winner.chips+=self.pot
-            self.pot = 0
-            self.history.append(["Winner: "+Winner.getName()])
+                winners = []
+                for x in self.players:
+                    if Hand(self.players[0].getBestHand()).hand_val() == Hand(x.getBestHand()).hand_val():
+                        winners.append[x]
+                payout = floor(self.pot / len(winners))
+                self.history.append(["multiple winners, pot split"])
+                for x in winners:
+                    x.chips += payout
+                    self.history.append(["Winner: "+ x.getName()])
+                self.pot = self.pot % len(winners)
+            else:    
+                Winner = self.players[0]
+                Winner.chips+=self.pot
+                self.pot = 0
+                self.history.append(["Winner: "+Winner.getName()])
             self.history.append(["End of Hand"])
             self.updatePlayers()
 
@@ -290,8 +304,9 @@ p1 = RandomPlayer()#NoBluffPlayer()#HumanPlayer()
 p1.setName("p1")
 p2 = RandomPlayer()#NoBluffPlayer()#HumanPlayer()
 p2.setName("p2")
-players1 = [p0,p1,p2]
-game = Game(players1, 200)
+players_list = [p0,p1,p2]
+chip_amount = 200
+game = Game(players_list, chip_amount)
 
 p0.setHistory(game.getHistory())
 p1.setHistory(game.getHistory())
@@ -300,12 +315,14 @@ p2.setHistory(game.getHistory())
 print(game)
 game.startGame()
 print(game)
-for x in game.getHistory():
-	print(x)
+# for x in game.getHistory():
+#   print(x)
 
+print("players: " + str(game.players[0].name) + ", chips: " + str(game.players[0].chips))
+print("all players " + str(game.allPlayers))
 
 # while(p.chipAmount() > 0):
-# 	p.action(p.chipAmount())
+#   p.action(p.chipAmount())
 
 # print(c0)
 # print(c11)
