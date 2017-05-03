@@ -307,13 +307,15 @@ c50 = Card(50)
 # p2 = Player()
 # p2.setName("p2")
 
-p0 = RandomPlayer()#NoBluffPlayer()#HumanPlayer()
+p0 = NoBluffPlayer()#HumanPlayer()
 p0.setName("p0")
-p1 = RandomPlayer()#NoBluffPlayer()#HumanPlayer()
+p1 = NoBluffPlayer()#RandomPlayer()#NoBluffPlayer()#HumanPlayer()
 p1.setName("p1")
 p2 = NoBluffPlayer()#HumanPlayer()RandomPlayer()
 p2.setName("p2")
-players_list = [p0,p1,p2]
+p3 = NoBluffPlayer()#RandomPlayer()#NoBluffPlayer()#HumanPlayer()
+p3.setName("p3")
+players_list = [p0,p1,p2,p3]
 chip_amount = 200
 game = Game(players_list, chip_amount)#, verbose = True)
 

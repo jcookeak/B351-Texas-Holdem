@@ -6,3 +6,4 @@ Texas Hold'em Final Project
 2. can run multiple games with command: seq 50 | xargs -Iz python3 game.py
 3. todo impliment betting strategy
 4. todo: impliment better calling for different hand classes
+5. Chips appear to be broken again.
