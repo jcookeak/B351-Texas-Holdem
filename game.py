@@ -264,8 +264,8 @@ class Game(object):
                     for x in winners:
                         x.chips += payout
                         self.history.append(["Winner: "+ x.getName()])
-                        self.pot = self.pot % len(winners)
-                        if(self.verbose): print("pot ", self.pot)
+                    self.pot = self.pot % len(winners)
+                    if(self.verbose): print("pot ", self.pot)
                     self.history.append(["End of Hand"])
                     return
 
@@ -307,17 +307,17 @@ c50 = Card(50)
 # p2 = Player()
 # p2.setName("p2")
 
-p0 = NoBluffPlayer()#HumanPlayer()
+p0 = RandomPlayer()#HumanPlayer()
 p0.setName("p0")
-p1 = NoBluffPlayer()#RandomPlayer()#NoBluffPlayer()#HumanPlayer()
+p1 = RandomPlayer()#RandomPlayer()#NoBluffPlayer()#HumanPlayer()
 p1.setName("p1")
 p2 = NoBluffPlayer()#HumanPlayer()RandomPlayer()
 p2.setName("p2")
 p3 = NoBluffPlayer()#RandomPlayer()#NoBluffPlayer()#HumanPlayer()
 p3.setName("p3")
-players_list = [p0,p1,p2,p3]
+players_list = [p0,p1,p2]
 chip_amount = 200
-game = Game(players_list, chip_amount)#, verbose = True)
+game = Game(players_list, chip_amount, verbose = True)
 
 p0.setHistory(game.getHistory())
 p1.setHistory(game.getHistory())

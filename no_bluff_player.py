@@ -13,6 +13,7 @@ check bet ammount for legality
 from player import *
 from hand_classification.texas_holdem_hand import *
 import random
+import re
 from EV_script import *
 
 class NoBluffPlayer(Player):
@@ -84,6 +85,7 @@ class NoBluffPlayer(Player):
                 #for now, bet the maximum:
                 #current_bet = maxbet
 
+                #betting strategy, go for a check unless we like our hand.
 
                 # didn't fold before flop so need to check or call
                 moves = self.legal_moves(self.history, maxbet)#get possible moves
@@ -95,20 +97,67 @@ class NoBluffPlayer(Player):
                 #randomly choose for now
                 num = random.randrange(len(moves))
                 move = list(moves)[num]
+                if self.verbose: print(str(self.name) + " moves: " + str(moves))
+
+                if "raise" in moves:
+                        return self.callRoundAction(self.callAmount(self.history))
+
+                if (self.betFlag == 0 and "bet" in moves):
+                        field_cards = []
+                        for x in self.game.field:
+                                field_cards.append(x.val)
+                        check_hand = Hand([self.hand[0].val, self.hand[1].val], field_cards)
+                        if check_hand.better_hand_check([True,"straight_flush"], check_hand.is_hand()):
+                                        # we have a royal flush so let's bet higher.
+                                self.chips -= maxbet
+                                self.betFlag = 1
+                                return ["bet", maxbet]
+                        elif check_hand.better_hand_check([True,"four"], check_hand.is_hand()):
+                                val =  math.floor(min(maxbet, (.3 * self.chips)))
+
+                                self.chips -= val
+                                self.betFlag = 1
+                                return ["bet", val]
+                        elif check_hand.better_hand_check([True,"full"], check_hand.is_hand()):
+                                val =  math.floor(min(maxbet, (.2 * self.chips)))
+                                self.chips -= val
+                                self.betFlag = 1
+                                return ["bet", val]
+                        elif check_hand.better_hand_check([True,"flush"], check_hand.is_hand()):
+                                val =  math.floor(min(maxbet, (.1 * self.chips)))
+                                self.chips -= val
+                                self.betFlag = 1
+                                return ["bet", val]
+                        elif check_hand.better_hand_check([True,"straight"], check_hand.is_hand()):
+                                val =  math.floor(min(maxbet, (0.08 * self.chips)))
+                                self.chips -= val
+                                self.betFlag = 1
+                                return ["bet", val]
+                        elif check_hand.better_hand_check([True,"three"], check_hand.is_hand()):
+                                val =  math.floor(min(maxbet, (.05 * self.chips)))
+                                self.chips -= val
+                                self.betFlag = 1
+                                return ["bet", val]
+                        else: return ["check", 0]
+
+                return ["check", 0]
+
+
+                
 
                 #print(move)#for testing
 
-                #if move == "fold": self.round = 0
-                if move == "call": self.chips-=self.game.callAmount(self)
-                if move == "call" or move =="check": return [move, self.game.callAmount(self)]
-                if move == "raise" or move =="bet": #bet randomly for now
-                        if maxbet>1:bet = random.randrange(1, maxbet+1)
-                        else: bet = maxbet
-                        self.chips -= bet + self.game.callAmount(self)
-                        self.betFlag = 1
-                        return [move, bet]
+                # #if move == "fold": self.round = 0
+                # if move == "call": self.chips-=self.game.callAmount(self)
+                # if move == "call" or move =="check": return [move, self.game.callAmount(self)]
+                # if move == "raise" or move =="bet": #bet randomly for now
+                #         if maxbet>1:bet = random.randrange(1, maxbet+1)
+                #         else: bet = maxbet
+                #         self.chips -= bet + self.game.callAmount(self)
+                #         self.betFlag = 1
+                #         return [move, bet]
 
-                return [move, 0]
+                # return [move, 0]
 
 
 
@@ -155,7 +204,7 @@ class NoBluffPlayer(Player):
                                 else:
                                         return ["fold", 0]
                         elif check_hand.better_hand_check([True,"straight"], check_hand.is_hand()):
-                                if (self.game.pot/needBet) >=  2:
+                                if (self.game.pot/needBet) >=  3:
                                         bet = self.game.callAmount(self)
                                         self.chips -= bet
                                         return ["call", bet]
@@ -206,10 +255,10 @@ class NoBluffPlayer(Player):
                         return unsuited[c1][c2]
 
         def callRound(self, history):
-            for i in range(-1, -1*len(history), -1):
-                if ("Round" in history[i]):
-                    break
-                if ("Call Round" in history[i]):
-                    needBet = history[i][1]
-                    return needBet
+                for i in range(-1, -1*len(history), -1):
+                        if ("Round" in history[i]):
+                                break
+                        if ("Call Round" in history[i]):
+                                needBet = history[i][1]
+                                return needBet
                 return False

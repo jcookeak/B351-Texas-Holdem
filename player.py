@@ -79,3 +79,23 @@ class Player(object):
 
 	def chipAmount(self):
 		return self.chips
+
+	def callAmount(self, history):
+                sum = 0
+                b = re.compile("bet*")
+                r = re.compile("raise*")
+                s = re.compile("\d+")
+                for i in range(-1,-1*len(history), -1):
+                        if("Round" in history[i]):
+                                return sum
+                        if b.search(history[i][0]):
+                                result = s.search(history[i][0])
+                                start = result.start()
+                                end = result.end()
+                                sum += int(history[i][0][start:end])
+                        if r.search(history[i][0]):
+                                result = s.search(history[i][0])
+                                start = result.start()
+                                end = result.end(sum)
+                                sum += int(history[i][0][start:end])
+                return False

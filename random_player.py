@@ -50,6 +50,7 @@ class RandomPlayer(Player):
                 # didn't fold before flop so need to check or call
 
 
+                if self.verbose: print(str(self.name) + " moves: " + str(moves))
                 self.round +=1#number after 1 doesn't matter; just need to differentiate the pre-flop
                 #randomly choose for now
                 num = random.randrange(len(moves))
