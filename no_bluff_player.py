@@ -16,8 +16,9 @@ import random
 from EV_script import *
 
 class NoBluffPlayer(Player):
-        def __init__(self, history = [], chips=0, af=0):
+        def __init__(self, history = [], chips=0, af=0, verbose = False):
                 Player.__init__(self)
+                self.verbose = verbose
                 self.agression_factor = af#work with this later
                 self.chips = chips#add initial chip set option
                 self.current_bet = 0#keep track of how much agent has in the pot
@@ -121,7 +122,54 @@ class NoBluffPlayer(Player):
                         else:
                                 return ["fold", 0]
                 else:
-                        if (needBet/self.game.pot >= (better_hand_outs(self.hand + self.game.field)[0] - 1)):
+                        field_cards = []
+                        for x in self.game.field:
+                                field_cards.append(x.val)
+                        check_hand = Hand([self.hand[0].val, self.hand[1].val], field_cards)
+                        if check_hand.better_hand_check([True,"straight_flush"], check_hand.is_hand()):
+                                if (self.game.pot/needBet) >=  0:
+                                        bet = self.game.callAmount(self)
+                                        self.chips -= bet
+                                        return ["call", bet]
+                                else:
+                                        return ["fold", 0]
+                        elif check_hand.better_hand_check([True,"four"], check_hand.is_hand()):
+                                if (self.game.pot/needBet) >=  1:
+                                        bet = self.game.callAmount(self)
+                                        self.chips -= bet
+                                        return ["call", bet]
+                                else:
+                                        return ["fold", 0]
+                        elif check_hand.better_hand_check([True,"full"], check_hand.is_hand()):
+                                if (self.game.pot/needBet) >=  2:
+                                        bet = self.game.callAmount(self)
+                                        self.chips -= bet
+                                        return ["call", bet]
+                                else:
+                                        return ["fold", 0]
+                        elif check_hand.better_hand_check([True,"flush"], check_hand.is_hand()):
+                                if (self.game.pot/needBet) >=  2:
+                                        bet = self.game.callAmount(self)
+                                        self.chips -= bet
+                                        return ["call", bet]
+                                else:
+                                        return ["fold", 0]
+                        elif check_hand.better_hand_check([True,"straight"], check_hand.is_hand()):
+                                if (self.game.pot/needBet) >=  2:
+                                        bet = self.game.callAmount(self)
+                                        self.chips -= bet
+                                        return ["call", bet]
+                                else:
+                                        return ["fold", 0]
+                        # elif check_hand.better_hand_check([True,"three"], check_hand.is_hand()):
+                        #         if (needBet/self.game.pot) >=  6:
+                        #                 bet = self.game.callAmount(self)
+                        #                 self.chips -= bet
+                        #                 return ["call", bet]
+                        #         else:
+                        #                 return ["fold", 0]
+
+                        elif (self.game.pot/needBet >= (better_hand_outs(self.hand + self.game.field)[0] - 1)):
                                 bet = self.game.callAmount(self)#current_bet is not reliable
                                 #needBet - self.current_bet
                                 self.chips -= bet#subtract bet from chips

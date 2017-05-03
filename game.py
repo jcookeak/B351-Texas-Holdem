@@ -77,7 +77,8 @@ class Deck(object):
 
 
 class Game(object):
-        def __init__(self, players, chips):
+        def __init__(self, players, chips, verbose = False):
+                self.verbose = verbose
                 self.gameRound = -1
                 self.totalChips = chips * len(players)
                 self.history = [["initialized game"]]
@@ -151,7 +152,7 @@ class Game(object):
                     self.field.append(self.deck.getCard()) #river
                     self.roundOfBetting() #post river betting
                 self.resolveHand()
-                print(self)
+                if(self.verbose): print(self)
 
         def getMaxBet(self):
             self.maxbet = self.totalChips
@@ -175,7 +176,7 @@ class Game(object):
 
 
         def roundOfBetting(self):
-                print(self)
+                if(self.verbose): print(self)
                 #self.updatePlayers()
                 self.round = 0
                 self.gameRound+=1
@@ -188,9 +189,9 @@ class Game(object):
                 while self.round < 3:
                         if self.needToCall() == False and self.round == 0:
                                 for player in self.players:
-                                        print("getting action for " + player.getName())
+                                        if(self.verbose): print("getting action for " + player.getName())
                                         self.currentAction = player.action(self.maxbet)
-                                        print("player action: " + self.currentAction[0])
+                                        if(self.verbose): print("player action: " + self.currentAction[0])
                                         if self.currentAction[0] == "bet":
                                                 self.history.append(["bet " + str(self.currentAction[1]), player.getName()])
                                                 for x in self.players:
@@ -224,7 +225,7 @@ class Game(object):
                                 self.history.append(["Call Round", self.current_bet])
                                 for player in self.players:
                                         if self.call[player.getName()] > 0:#check if any player needs to call
-                                                print("call or fold")
+                                                if(self.verbose): print("call or fold")
                                                 self.currentAction = player.action(self.maxbet)
                                                 if self.currentAction[0] == "call":
                                                         self.history.append(["call", player.getName()])
@@ -258,13 +259,13 @@ class Game(object):
                         winners.append(x)
                 if len(winners)>1:
                     payout = math.floor(self.pot / len(winners))
-                    print ("multiple winners ",len(winners), self.pot, payout, self.pot/len(winners))
+                    if(self.verbose): print ("multiple winners ",len(winners), self.pot, payout, self.pot/len(winners))
                     self.history.append(["multiple winners, pot split"])
                     for x in winners:
                         x.chips += payout
                         self.history.append(["Winner: "+ x.getName()])
                         self.pot = self.pot % len(winners)
-                        print("pot ", self.pot)
+                        if(self.verbose): print("pot ", self.pot)
                     self.history.append(["End of Hand"])
                     return
 
@@ -306,7 +307,7 @@ c50 = Card(50)
 # p2 = Player()
 # p2.setName("p2")
 
-p0 = NoBluffPlayer()#HumanPlayer()
+p0 = RandomPlayer()#NoBluffPlayer()#HumanPlayer()
 p0.setName("p0")
 p1 = RandomPlayer()#NoBluffPlayer()#HumanPlayer()
 p1.setName("p1")
@@ -314,47 +315,46 @@ p2 = NoBluffPlayer()#HumanPlayer()RandomPlayer()
 p2.setName("p2")
 players_list = [p0,p1,p2]
 chip_amount = 200
-game = Game(players_list, chip_amount)
+game = Game(players_list, chip_amount)#, verbose = True)
 
 p0.setHistory(game.getHistory())
 p1.setHistory(game.getHistory())
 p2.setHistory(game.getHistory())
 
-print(game)
+#print(game)
 game.startGame()
-print(game)
+#print(game)
 # for x in game.getHistory():
 #   print(x)
 
 print("players: " + str(game.players[0].name) + ", chips: " + str(game.players[0].chips))
-print("all players " + str(game.allPlayers))
+#print("all players " + str(game.allPlayers))
 
-del game
+# del game
 
-games_to_run = 5
-counter_games = 0
-player_wins = {p0:0, p1:0, p2:0}
-game = 0
-games = []
-for x in range(games_to_run):
-    games.append(Game(players_list,chip_amount))
-while counter_games < games_to_run:
-    del game
-    game = games[counter_games]
-    game.startGame()
-    print(counter_games)
-    print(str(game.players[0].hand))
-    if str(game.players[0].name) == "p0":
-        player_wins[p0] += 1
-    if str(game.players[0].name) == "p1":
-        player_wins[p1] += 1
-    if str(game.players[0].name) == "p2":
-        player_wins[p2] += 1
-    counter_games += 1
+# games_to_run = 5
+# counter_games = 0
+# player_wins = {p0:0, p1:0, p2:0}
 
-print("player p0 wins: " + str(player_wins[p0]))
-print("player p1 wins: " + str(player_wins[p1]))
-print("player p2 wins: " + str(player_wins[p2]))
+# while counter_games < games_to_run:
+#     #del running_game
+#     running_game = Game(players_list,chip_amount)
+#     running_game.startGame()
+#     print(running_game)
+#     print(counter_games)
+#     print(str(running_game.players[0].hand))
+#     if str(running_game.players[0].name) == "p0":
+#         player_wins[p0] += 1
+#     if str(running_game.players[0].name) == "p1":
+#         player_wins[p1] += 1
+#     if str(running_game.players[0].name) == "p2":
+#         player_wins[p2] += 1
+#     counter_games += 1
+#     del running_game
+
+# print("player p0 wins: " + str(player_wins[p0]))
+# print("player p1 wins: " + str(player_wins[p1]))
+# print("player p2 wins: " + str(player_wins[p2]))
 # while(p.chipAmount() > 0):
 #   p.action(p.chipAmount())
 

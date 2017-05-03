@@ -19,8 +19,9 @@ from hand_classification.texas_holdem_hand import *
 import random
 
 class RandomPlayer(Player):
-        def __init__(self, history = [], chips=0, af=0):
+        def __init__(self, history = [], chips=0, af=0, verbose = False):
                 Player.__init__(self)
+                self.verbose = verbose
                 self.agression_factor = af#work with this later
                 self.chips = chips#add initial chip set option
                 self.current_bet = 0#keep track of how much agent has in the pot
@@ -34,7 +35,7 @@ class RandomPlayer(Player):
                 self.history = history
 
         def action(self, maxbet):
-                print(self.round)
+                if(self.verbose): print(self.round)
                 # pre flop check
                 isCallRound = self.callRound(self.history)
                 if isCallRound:

@@ -34,7 +34,7 @@ def better_hand_outs(cards_known, checked_cards = [], threshold = [False, "high"
     outs = set()
     soft_outs = set()
     cards = np.asarray(cards_known)
-    print("cards " + str(cards))
+    #print("cards " + str(cards))
     private = np.asarray([cards[0], cards[1]])
     public = np.setdiff1d(cards, private)
 
@@ -44,13 +44,13 @@ def better_hand_outs(cards_known, checked_cards = [], threshold = [False, "high"
     pool = np.setdiff1d(pool, np.asarray(checked_cards))
     fill_cards = list(it.combinations(np.unique(pool),1))
 
-    print(fill_cards)
+    #print(fill_cards)
     known_cards = []
     for x in (np.append(private, public)):
         known_cards.append(x.val)
-    print("best cards" + str(known_cards))
+    #print("best cards" + str(known_cards))
     best_hand = Hand(Hand(known_cards).best_hand()).is_hand()
-    print(best_hand)
+    #print(best_hand)
     if (len(cards_known) >= 5):
         combin_n = 4
     else:
