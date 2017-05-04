@@ -61,17 +61,17 @@ class RandomPlayer(Player):
                     self.chips -= self.game.callAmount(self)
                     if maxbet==0:
                         return ["call", self.game.callAmount(self)]
-                    #if maxbet>1:bet = random.randrange(maxbet)+1
-                    #else: bet = maxbet
-                    bet = maxbet#always bet max
+                    if maxbet>1:bet = random.randrange(maxbet)+1
+                    else: bet = maxbet
+                    #bet = maxbet#always bet max
                     self.chips -= bet
                     self.betFlag = 1
                     return ["raise", bet]
 
                 if move =="bet": #bet randomly for now
-                        #if maxbet>1:bet = random.randrange(maxbet)+1
-                        #else: bet = maxbet
-                        bet = maxbet#always bet max
+                        if maxbet>1:bet = random.randrange(maxbet)+1
+                        else: bet = maxbet
+                        #bet = maxbet#always bet max
                         #print ("bet", bet)
                         self.chips -= bet + self.game.callAmount(self)
                         self.betFlag = 1
@@ -82,7 +82,7 @@ class RandomPlayer(Player):
 
         #this function is called if a player needs to call a bet to stay in the hand
         def callRoundAction(self, needBet):
-            moves = ["call"]#, "fold"]
+            moves = ["call", "fold"]
             num = random.randrange(len(moves))
             move = moves[num]
             if move == "call":
