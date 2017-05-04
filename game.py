@@ -17,7 +17,7 @@ random
 no bluff
 
 """
-5
+
 import math
 import re
 import random
@@ -87,10 +87,9 @@ class Game(object):
                 self.field = []
                 self.pot = 0
                 self.call = {}
-                self.allPlayers = players
+                self.allPlayers = players[:]
                 self.current_bet = 0
-                self.players = players
-                for player in self.players:
+                for player in self.allPlayers:
                         player.setChips(chips)
                         player.setActiveGame(self)
                         self.history.append([player.getName() + " added"])
@@ -116,6 +115,8 @@ class Game(object):
 
         def startGame(self):
                 self.deck.shuffleDeck()
+                for player in self.allPlayers:
+                    player.setHistory(self.history)
                 while len(self.allPlayers) > 1:#add check for winner
             #self.newHand()
                         self.playHand()
@@ -153,6 +154,8 @@ class Game(object):
                     self.roundOfBetting() #post river betting
                 self.resolveHand()
                 if(self.verbose): print(self)
+                self.history.append(["Rotate Players"])
+                self.roratePlayers()
 
         def getMaxBet(self):
             self.maxbet = self.totalChips
@@ -186,7 +189,7 @@ class Game(object):
                 self.current_bet = 0
                 for x in self.players:
                         self.call[x.getName()] = 0
-                while self.round < 3:
+                while self.round < 2:
                         if self.needToCall() == False and self.round == 0:
                                 for player in self.players:
                                         if(self.verbose): print("getting action for " + player.getName())
@@ -247,9 +250,6 @@ class Game(object):
                 return self.call[player.getName()]
 
         def resolveHand(self):
-            # payout pot to top player(s)
-
-            #fix this!!!
             if len(self.players)<1:return
             elif len(self.players)>1:
                 self.players =  sorted(self.players, key=lambda x: Hand(x.getBestHand()).hand_val())
@@ -276,15 +276,12 @@ class Game(object):
             self.history.append(["End of Hand"])
             self.updatePlayers()
 
-
-        def better_hand(self, h1, h2):#takes two Hand class objects
-            v1, v2 = h1.hand_val(), h2.hand_val()
-            if v1 > v2:pass
-            if v2>v1:pass
-            else:pass
-
         def getHistory(self):
                 return self.history
+
+        def roratePlayers(self):
+            temp = self.allPlayers.pop(0)
+            self.allPlayers.append(temp)
 
 
 ##########################################################
@@ -315,21 +312,27 @@ p2 = NoBluffPlayer()#HumanPlayer()RandomPlayer()
 p2.setName("p2")
 p3 = NoBluffPlayer()#RandomPlayer()#NoBluffPlayer()#HumanPlayer()
 p3.setName("p3")
-players_list = [p0,p1,p2]
-chip_amount = 200
-game = Game(players_list, chip_amount, verbose = True)
+p4 = RandomPlayer()#NoBluffPlayer()#HumanPlayer()
+p4.setName("p3")
 
-p0.setHistory(game.getHistory())
-p1.setHistory(game.getHistory())
-p2.setHistory(game.getHistory())
+
+count = 0
+while (count < 50):
+    players_list = [p0,p1,p2]#,p3,p4]
+    chip_amount = 50
+    game = Game(players_list, chip_amount)
+    game.startGame()
+    print("players: " + str(game.players[0].name) + ", chips: " + str(game.players[0].chips))
+    count+=1
+
 
 #print(game)
-game.startGame()
 #print(game)
-# for x in game.getHistory():
-#   print(x)
+#for x in game.getHistory():
+   #print(x)
 
-print("players: " + str(game.players[0].name) + ", chips: " + str(game.players[0].chips))
+
+
 #print("all players " + str(game.allPlayers))
 
 # del game

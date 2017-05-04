@@ -77,19 +77,15 @@ class NoBluffPlayer(Player):
                 self.checkHand = Hand(self.handToValue())
                 self.temp = self.checkHand.sortByValue(self.handToValue())
                 self.bestHand = self.checkHand.best_hand()
-                
-                if self.round==0 and self.checkFoldPreFlop():#should probably only check this at the begining of a hand
-                        return (["fold"])
-                
 
-                #for now, bet the maximum:
-                #current_bet = maxbet
+                if self.round==0 and self.checkFoldPreFlop():#should probably only check this at the begining of a hand
+                        return (["fold", 0])
 
                 #betting strategy, go for a check unless we like our hand.
 
                 # didn't fold before flop so need to check or call
                 moves = self.legal_moves(self.history, maxbet)#get possible moves
-                if self.round == 0:# don't want to bet first round
+                if self.round == 0:# don't want to bet or raise first round
                         if "bet" in moves: moves.remove("bet")
                         if "raise" in moves: moves.remove("raise")
 
@@ -102,19 +98,18 @@ class NoBluffPlayer(Player):
                 if "raise" in moves:
                         return self.callRoundAction(self.callAmount(self.history))
 
-                if (self.betFlag == 0 and "bet" in moves):
+                if (self.betFlag == 0 and "bet" in moves):#don't need to check bet flag twice
                         field_cards = []
                         for x in self.game.field:
                                 field_cards.append(x.val)
                         check_hand = Hand([self.hand[0].val, self.hand[1].val], field_cards)
                         if check_hand.better_hand_check([True,"straight_flush"], check_hand.is_hand()):
-                                        # we have a royal flush so let's bet higher.
+                                # we have a royal flush so let's bet higher.
                                 self.chips -= maxbet
                                 self.betFlag = 1
                                 return ["bet", maxbet]
                         elif check_hand.better_hand_check([True,"four"], check_hand.is_hand()):
                                 val =  math.floor(min(maxbet, (.3 * self.chips)))
-
                                 self.chips -= val
                                 self.betFlag = 1
                                 return ["bet", val]
@@ -143,7 +138,7 @@ class NoBluffPlayer(Player):
                 return ["check", 0]
 
 
-                
+
 
                 #print(move)#for testing
 

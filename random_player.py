@@ -46,27 +46,32 @@ class RandomPlayer(Player):
                 #bet random ammount if possible
                 moves = self.legal_moves(self.history, maxbet)#get possible moves
 
-
-                # didn't fold before flop so need to check or call
-
-
                 if self.verbose: print(str(self.name) + " moves: " + str(moves))
                 self.round +=1#number after 1 doesn't matter; just need to differentiate the pre-flop
                 #randomly choose for now
                 num = random.randrange(len(moves))
                 move = list(moves)[num]
 
-                #print(move)
-
-                #if move == "fold": self.round = 0
                 if move =="check":
                     return [move, 0]
                 if move == "call":
                     self.chips -= self.game.callAmount(self)
                     return [move, self.game.callAmount(self)]
-                if move == "raise" or move =="bet": #bet randomly for now
-                        if maxbet>1:bet = random.randrange(maxbet)+1
-                        else: bet = maxbet
+                if move == "raise":
+                    self.chips -= self.game.callAmount(self)
+                    if maxbet==0:
+                        return ["call", self.game.callAmount(self)]
+                    #if maxbet>1:bet = random.randrange(maxbet)+1
+                    #else: bet = maxbet
+                    bet = maxbet#always bet max
+                    self.chips -= bet
+                    self.betFlag = 1
+                    return ["raise", bet]
+
+                if move =="bet": #bet randomly for now
+                        #if maxbet>1:bet = random.randrange(maxbet)+1
+                        #else: bet = maxbet
+                        bet = maxbet#always bet max
                         #print ("bet", bet)
                         self.chips -= bet + self.game.callAmount(self)
                         self.betFlag = 1
