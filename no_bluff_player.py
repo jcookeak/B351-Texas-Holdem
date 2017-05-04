@@ -73,7 +73,7 @@ class NoBluffPlayer(Player):
                 # pre flop check
                 isCallRound = self.callRound(self.history)
                 if isCallRound:
-                    return self.callRoundAction(isCallRound)
+                    return self.callRoundAction(isCallRound, True)
                 self.checkHand = Hand(self.handToValue())
                 self.temp = self.checkHand.sortByValue(self.handToValue())
                 self.bestHand = self.checkHand.best_hand()
@@ -96,7 +96,7 @@ class NoBluffPlayer(Player):
                 if self.verbose: print(str(self.name) + " moves: " + str(moves))
 
                 if "raise" in moves:
-                        return self.callRoundAction(self.callAmount(self.history))
+                        return self.callRoundAction(self.callAmount(self.history), False)
 
                 if (self.betFlag == 0 and "bet" in moves):#don't need to check bet flag twice
                         field_cards = []
@@ -156,7 +156,7 @@ class NoBluffPlayer(Player):
 
 
 
-        def callRoundAction(self, needBet):
+        def callRoundAction(self, needBet, isCallRound):
                 if (self.round == 0):
                         if needBet/self.chips >= (0.1 * self.preflop_call_percent()):
                                 bet = self.game.callAmount(self)#current_bet is not reliable

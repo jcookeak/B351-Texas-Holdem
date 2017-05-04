@@ -127,6 +127,7 @@ class Game(object):
                 self.field = []
                 self.players = self.allPlayers[:]
                 #collect anti from players
+                self.updatePlayers()
                 for player in self.players:
                         self.pot += player.collectAnti(1)
 
@@ -153,9 +154,10 @@ class Game(object):
                     self.field.append(self.deck.getCard()) #river
                     self.roundOfBetting() #post river betting
                 self.resolveHand()
+                self.updatePlayers()
                 if(self.verbose): print(self)
                 self.history.append(["Rotate Players"])
-                self.roratePlayers()
+                self.rotatePlayers()
 
         def getMaxBet(self):
             self.maxbet = self.totalChips
@@ -166,17 +168,20 @@ class Game(object):
 
         def updatePlayers(self):
                 for p in self.allPlayers:
+                        #print(p.getName())
                         # if p.chips > (chip_amount * (len(players_list) + 1)):
                         #     print("player: " + p.name + " chips: " + str(p.chips))
                         #     raise ValueError("player chips exceed total amount")
-                        if p.chips <= 0:
-                                self.history.append(["Player out " + p.getName()])
-                                self.allPlayers.remove(p)
-                                if p in self.players: self.players.remove(p)
+                        if p.chips < 1:
+                            #print(p.getName(), "removed")
+                            self.history.append(["Player out " + p.getName()])
+                            self.allPlayers.remove(p)
+                            if p in self.players: self.players.remove(p)
+                #print("second loop")
+
         def checkEndHand(self):
             if len(self.players)<2:return True
             return False
-
 
         def roundOfBetting(self):
                 if(self.verbose): print(self)
@@ -279,8 +284,9 @@ class Game(object):
         def getHistory(self):
                 return self.history
 
-        def roratePlayers(self):
-            temp = self.allPlayers.pop(0)
+        def rotatePlayers(self):
+            temp = self.allPlayers[0]
+            self.allPlayers.pop(0)
             self.allPlayers.append(temp)
 
 
@@ -306,7 +312,7 @@ c50 = Card(50)
 
 p0 = RandomPlayer()#HumanPlayer()
 p0.setName("p0")
-p1 = RandomPlayer()#RandomPlayer()#NoBluffPlayer()#HumanPlayer()
+p1 = NoBluffPlayer()#HumanPlayer()
 p1.setName("p1")
 p2 = NoBluffPlayer()#HumanPlayer()RandomPlayer()
 p2.setName("p2")
@@ -320,7 +326,7 @@ count = 0
 while (count < 50):
     players_list = [p0,p1,p2]#,p3,p4]
     chip_amount = 50
-    game = Game(players_list, chip_amount)
+    game = Game(players_list, chip_amount)#, True)
     game.startGame()
     print("players: " + str(game.players[0].name) + ", chips: " + str(game.players[0].chips))
     count+=1
