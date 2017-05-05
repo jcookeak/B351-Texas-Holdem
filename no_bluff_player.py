@@ -78,8 +78,8 @@ class NoBluffPlayer(Player):
                 self.temp = self.checkHand.sortByValue(self.handToValue())
                 self.bestHand = self.checkHand.best_hand()
 
-                if self.round==0 and self.checkFoldPreFlop():#should probably only check this at the begining of a hand
-                        return (["fold", 0])
+                # if self.round==0 and self.checkFoldPreFlop():#should probably only check this at the begining of a hand
+                #         return (["fold", 0])
 
                 #betting strategy, go for a check unless we like our hand.
 
@@ -109,27 +109,32 @@ class NoBluffPlayer(Player):
                                 self.betFlag = 1
                                 return ["bet", maxbet]
                         elif check_hand.better_hand_check([True,"four"], check_hand.is_hand()):
-                                val =  math.floor(min(maxbet, (.3 * self.chips)))
+                                val =  math.floor(min(maxbet, (.5 * self.chips)))
+                                if val <= 0: val = 1
                                 self.chips -= val
                                 self.betFlag = 1
                                 return ["bet", val]
                         elif check_hand.better_hand_check([True,"full"], check_hand.is_hand()):
-                                val =  math.floor(min(maxbet, (.2 * self.chips)))
+                                val =  math.floor(min(maxbet, (.3 * self.chips)))
+                                if val <= 0: val = 1
                                 self.chips -= val
                                 self.betFlag = 1
                                 return ["bet", val]
                         elif check_hand.better_hand_check([True,"flush"], check_hand.is_hand()):
-                                val =  math.floor(min(maxbet, (.1 * self.chips)))
+                                val =  math.floor(min(maxbet, (.2 * self.chips)))
+                                if val <= 0: val = 1
                                 self.chips -= val
                                 self.betFlag = 1
                                 return ["bet", val]
                         elif check_hand.better_hand_check([True,"straight"], check_hand.is_hand()):
-                                val =  math.floor(min(maxbet, (0.08 * self.chips)))
+                                val =  math.floor(min(maxbet, (0.1 * self.chips)))
+                                if val <= 0: val = 1
                                 self.chips -= val
                                 self.betFlag = 1
                                 return ["bet", val]
                         elif check_hand.better_hand_check([True,"three"], check_hand.is_hand()):
                                 val =  math.floor(min(maxbet, (.05 * self.chips)))
+                                if val <= 0: val = 1
                                 self.chips -= val
                                 self.betFlag = 1
                                 return ["bet", val]
@@ -157,6 +162,8 @@ class NoBluffPlayer(Player):
 
 
         def callRoundAction(self, needBet, isCallRound):
+                if(needBet == 0):
+                        print(self.history)
                 if (self.round == 0):
                         if needBet/self.chips >= (0.1 * self.preflop_call_percent()):
                                 bet = self.game.callAmount(self)#current_bet is not reliable
