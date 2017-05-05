@@ -9,3 +9,9 @@ Texas Hold'em Final Project
 5. Chips appear to be broken again.
 6. Raising is causing problems
 7. Occasional division by zero error
+
+
+Added a new file to fix the chip situation: game_mechanics.py
+Went through the game file line by line and transformed it into this file
+It occasionally adds one chip into the game, however, most of the time it seems to work.
+Still looking into why one chip pops up every so often.
