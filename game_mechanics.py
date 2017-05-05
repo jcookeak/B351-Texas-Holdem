@@ -5,13 +5,14 @@ from card import *
 from hand_classification.texas_holdem_hand import *
 
 class Game():
-    def __init__(self, players, chips):
+    def __init__(self, players, chips, verbose = False):
         self.allPlayers = players[:]
+        self.verbose = verbose
         self.history = []
         self.deck = Deck()
         self.current_bet = 0
         self.maxBet = chips
-        self.table = []
+        self.field = []
         self.pot = 0
         self.playerChips =  {}
         self.call = []
@@ -34,25 +35,26 @@ class Game():
 
         self.roundOfBetting()#pre-flop
         if (not self.checkHandEnd()):#if players still in game
-            self.table.append(self.deck.getCard())
-            self.table.append(self.deck.getCard())
-            self.table.append(self.deck.getCard())
+            self.field.append(self.deck.getCard())
+            self.field.append(self.deck.getCard())
+            self.field.append(self.deck.getCard())
             self.roundOfBetting()#post-flop
             if (not self.checkHandEnd()):
-                self.table.append(self.deck.getCard())
+                self.field.append(self.deck.getCard())
                 self.roundOfBetting()#post turn
                 if (not self.checkHandEnd()):
-                    self.table.append(self.deck.getCard())
+                    self.field.append(self.deck.getCard())
                     self.roundOfBetting()#post river
         #end of hand
         self.resolveHand()
         self.updatePlayers()
         self.rotatePlayers()
+        if(self.verbose):print(self)
 
     def newHand(self):
-        #print("new hand")
+        if(self.verbose): print("New Hand")
         self.history.append(["Starting new hand"])
-        self.table = []#reset table
+        self.field = []#reset field
         self.deck.shuffleDeck()
         self.players = self.allPlayers[:]
         for player in self.players:
@@ -60,9 +62,10 @@ class Game():
             self.playerChips[player.getName()]-=1
             player.resetFlag()
             player.setHand(self.deck.getCard(), self.deck.getCard())
-    
+
     def roundOfBetting(self):
         #print("round of betting")
+        if(self.verbose):print(self)
         for p in self.allPlayers:
             p.chips = self.playerChips[p.getName()]
         haveBet = False
@@ -74,11 +77,13 @@ class Game():
             if self.checkHandEnd():return
             if bettingRound != 0 and self.needToCall():#call round
                 self.history.append(["Call Round", self.current_bet])
+                if(self.verbose): print("Call Round")
                 for player in self.players:
                     if self.checkHandEnd(): return
                     if self.getCallAmmount(player) >0:#player has to call
+                        if(self.verbose): print("getting action for " + player.getName())
                         [move, bet] = player.action(self.maxBet)
-                        #print(move, bet, player.getName())
+                        if(self.verbose):print(move, bet, player.getName())
                         self.history.append([move, bet])
                         if move == "call" and self.getCallAmmount(player) == bet:
                             self.pot+=bet
@@ -89,13 +94,15 @@ class Game():
             else:
                 for player in self.players:
                     if self.checkHandEnd():return
-                    currentAction = player.action(self.maxBet)
+                    #currentAction = player.action(self.maxBet)
+                    if(self.verbose): print("getting action for " + player.getName())
                     [move, bet] = player.action(self.maxBet)
                     #print(move, bet, player.getName())
                     self.history.append([player.getName(), move, bet])
+                    if(self.verbose): print(player.getName(), move, bet)
                     if move=="bet":
                         if bet>self.maxBet:
-                            print("forced fold", player.getName())
+                            if(self.verbose): print("forced fold", player.getName())
                             self.fold(player, bet)
                         else:
                             haveBet = True
@@ -115,11 +122,11 @@ class Game():
                             self.maxBet-=bet
                     elif move == "check":
                         if haveBet:
-                            print("forced fold", player.getName())
+                            if(self.verbose): print("forced fold", player.getName())
                             self.fold(player, bet)
                     elif move == "call":
                         if (haveBet == False) or bet!=self.getCallAmmount(player):
-                            print("forced fold", player.getName())
+                            if(self.verbose): print("forced fold", player.getName())
                             fold(player, bet)
                         else:
                             self.pot+=bet
@@ -150,7 +157,7 @@ class Game():
             self.pot = 0
             self.history.append(["Winner: "+self.players[0].getName()])
         self.history.append(["End of Hand"])
-            
+
     def fold(self, player, bet):
         #print("fold function")
         self.players.remove(player)
@@ -200,3 +207,20 @@ class Game():
                 if p in self.players: self.players.remove(p)
     def callAmount(self, player):
         return self.getCallAmmount(player)
+
+    def __str__(self):
+        self.string = "\n"
+        for player in self.players:
+            self.string = self.string + "--" + (player.getName()) + "--\n"
+            self.string = self.string + "chips: " + str(player.chipAmount()) + "\n"
+            self.string = self.string + "hand: " + str(player.getHand()[0]) + ", " + str(player.getHand()[1]) + "\n"
+        self.string = self.string + ("--Game state--\n")
+        self.string = self.string + "current pot: " + str(self.pot) + "\n"
+        self.string = self.string + "field: "
+        for x in self.field:
+            self.string = self.string + "|" + str(x) + "| "
+        self.string = self.string + "\n\n"
+        return self.string
+
+    def revealedCards(self):
+        return self.field
