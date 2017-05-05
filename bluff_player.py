@@ -75,7 +75,7 @@ class BluffPlayer(Player):
                 # pre flop check
                 isCallRound = self.callRound(self.history)
                 if isCallRound:
-                    return self.callRoundAction(self.game.callAmount(self), True)
+                    return self.callRoundAction(self.game.callAmount(self), True, maxbet)
                 self.checkHand = Hand(self.handToValue())
                 self.temp = self.checkHand.sortByValue(self.handToValue())
                 self.bestHand = self.checkHand.best_hand()
@@ -99,7 +99,7 @@ class BluffPlayer(Player):
 
                 if "raise" in moves:
                     if self.bluff_factor<MIN_BLUFF:
-                        return self.callRoundAction(self.callAmount(self.history), False)
+                        return self.callRoundAction(self.callAmount(self.history), False, maxbet)
                     else:
                         self.chips-=self.game.callAmount(self)
                         if self.chips>0:
@@ -111,7 +111,7 @@ class BluffPlayer(Player):
                         else:return["call", val]
 
                 if "call" in moves:
-                    return self.callRoundAction(self.callAmount(self.history), False)
+                    return self.callRoundAction(self.callAmount(self.history), False, maxbet)
                 self.round+=1
 
                 if (self.betFlag == 0 and "bet" in moves):#don't need to check bet flag twice
@@ -177,7 +177,7 @@ class BluffPlayer(Player):
 
 
 
-        def callRoundAction(self, needBet, isCallRound):
+        def callRoundAction(self, needBet, isCallRound, maxbet):
                 if(needBet == 0):
                     return ["call", 0]
                 if (self.round == 0):
@@ -194,6 +194,10 @@ class BluffPlayer(Player):
                                 field_cards.append(x.val)
                         check_hand = Hand([self.hand[0].val, self.hand[1].val], field_cards)
                         if check_hand.better_hand_check([True,"straight_flush"], check_hand.is_hand()) or self.bluff_factor>=MIN_BLUFF+4:
+                                if (self.betFlag == 0 and (self.game.pot/needBet >= 0)):
+                                    bet = maxbet
+                                    self.chips -= bet
+                                    return ["raise", bet]
                                 if (self.game.pot/needBet) >=  0:
                                         bet = self.game.callAmount(self)
                                         self.chips -= bet
@@ -201,6 +205,10 @@ class BluffPlayer(Player):
                                 else:
                                         return ["fold", 0]
                         elif check_hand.better_hand_check([True,"four"], check_hand.is_hand()) or self.bluff_factor>=MIN_BLUFF+3:
+                                if (self.betFlag == 0 and (self.game.pot/needBet >= .5)):
+                                    bet = min(maxbet, round(self.chips * .8))
+                                    self.chips -= bet
+                                    return ["raise", bet]
                                 if (self.game.pot/needBet) >=  1:
                                         bet = self.game.callAmount(self)
                                         self.chips -= bet
@@ -208,6 +216,10 @@ class BluffPlayer(Player):
                                 else:
                                         return ["fold", 0]
                         elif check_hand.better_hand_check([True,"full"], check_hand.is_hand()) or self.bluff_factor>=MIN_BLUFF+2:
+                                if (self.betFlag == 0 and (self.game.pot/needBet >= 0)):
+                                    bet = min(maxbet, round(self.chips * .4))
+                                    self.chips -= bet
+                                    return ["raise", bet]
                                 if (self.game.pot/needBet) >=  2:
                                         bet = self.game.callAmount(self)
                                         self.chips -= bet
@@ -215,6 +227,10 @@ class BluffPlayer(Player):
                                 else:
                                         return ["fold", 0]
                         elif check_hand.better_hand_check([True,"flush"], check_hand.is_hand()) or self.bluff_factor>=MIN_BLUFF+1:
+                                if (self.betFlag == 0 and (self.game.pot/needBet >= 0)):
+                                    bet = min(maxbet, round(self.chips * .2))
+                                    self.chips -= bet
+                                    return ["raise", bet]
                                 if (self.game.pot/needBet) >=  2:
                                         bet = self.game.callAmount(self)
                                         self.chips -= bet

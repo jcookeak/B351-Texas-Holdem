@@ -18,9 +18,11 @@ p4.setName("p4")
 
 wins = {"p0":0, "p1":0, "p2":0, "p3":0, "p4":0}
 count = 0
-while (count < 10):
+while (count < 100):
     players_list = [p0,p1,p2,p3,p4]#,p3,p4]
     chip_amount = 50
     game = Game(players_list, chip_amount)#, True)
     game.playGame()
     print("players: " + str(game.players[0].name) + ", chips: " + str(game.players[0].chips))
+    count += 1
+
