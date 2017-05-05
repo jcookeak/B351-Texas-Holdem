@@ -95,7 +95,7 @@ class NoBluffPlayer(Player):
                 move = list(moves)[num]
                 if self.verbose: print(str(self.name) + " moves: " + str(moves))
 
-                if "raise" in moves:
+                if "call" in moves:
                         return self.callRoundAction(self.callAmount(self.history), False)
 
                 if (self.betFlag == 0 and "bet" in moves):#don't need to check bet flag twice

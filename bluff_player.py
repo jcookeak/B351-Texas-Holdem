@@ -110,7 +110,8 @@ class BluffPlayer(Player):
                             return(["raise", val])
                         else:return["call", val]
 
-
+                if "call" in moves:
+                    return self.callRoundAction(self.callAmount(self.history), False)
                 self.round+=1
 
                 if (self.betFlag == 0 and "bet" in moves):#don't need to check bet flag twice
