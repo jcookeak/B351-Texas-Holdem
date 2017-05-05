@@ -22,12 +22,12 @@ import math
 import re
 import random
 
-from player import *
-from human import *
-from no_bluff_player import *
+#from player import *
+#from human import *
+#from no_bluff_player import *
 from card import *
-from random_player import *
-from EV_script import *
+#from random_player import *
+#from EV_script import *
 from deck import *
 from hand_classification.texas_holdem_hand import *
 
@@ -93,7 +93,7 @@ class Game(object):
                 while len(self.allPlayers) > 1:
                         self.playHand()
                 if len(self.allPlayers)==1: self.winnner = self.allPlayers[0]
-                
+
 
         def newHand(self):#set up a new game hand
                 self.history.append(["starting new hand"])
@@ -184,7 +184,7 @@ class Game(object):
                                                 for x in self.players:
                                                         if x != player:
                                                                 self.call[x.getName()] += self.currentAction[1]
-                                                        self.maxbet = self.getMaxBet()
+                                                        self.maxbet -= self.currentAction[1]
                                                 self.current_bet += self.currentAction[1]
                                                 self.pot += self.call[player.getName()] + self.currentAction[1]
                                                 self.call[player.getName()] = 0

@@ -2,6 +2,7 @@
 
 # Player default class
 import re
+import random
 
 class Player(object):
 	def __init__(self):
@@ -11,6 +12,7 @@ class Player(object):
 		self.round = 0
 		self.current_bet = 0
 		self.chips = 0
+		self.bluff_factor = 0
 
 	def handToValue(self):
 		self.tempHand = []
@@ -40,6 +42,7 @@ class Player(object):
 		self.betFlag = 0
 		self.round = 0
 		self.current_bet = 0
+		bluff_factor = random.randrange(10)
 
 	def setHand(self, card1, card2):
 		self.hand = [card1, card2]
@@ -74,13 +77,16 @@ class Player(object):
 
 				if ("Round" in history[i]): return False
 				#parsing issue
-				if re.match ("bet*", history[i][0]) or ("raise" in history[i]) or ("call" in history[i]):return True
+				if ("bet" in history[i]) or ("raise" in history[i]) or ("call" in history[i]):return True
 			return False
 
 	def chipAmount(self):
 		return self.chips
 
 	def callAmount(self, history):
+		return self.game.callAmount(self)
+
+		"""
                 sum = 0
                 b = re.compile("bet*")
                 r = re.compile("raise*")
@@ -99,3 +105,4 @@ class Player(object):
                                 end = result.end(sum)
                                 sum += int(history[i][0][start:end])
                 return False
+"""
